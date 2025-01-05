@@ -18,8 +18,8 @@ class TemplateFactory extends Factory
     {
         return [
             'user_id' => \App\Models\User::factory(),
-            'title' => $this->faker->sentence,
-            'description' => $this->faker->paragraph,
+            'title' => $this->faker->sentence(3),
+            'description' => $this->faker->paragraph(2),
             'created_at' => now(),
             'updated_at' => now(),
             'deleted_at' => null,
