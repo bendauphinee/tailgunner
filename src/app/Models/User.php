@@ -66,4 +66,9 @@ class User extends Authenticatable
             'password' => 'hashed',
         ];
     }
+
+    public function templates()
+    {
+        return $this->hasMany(Template::class);
+    }
 }
