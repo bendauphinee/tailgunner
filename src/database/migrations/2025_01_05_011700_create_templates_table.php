@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('templates', function (Blueprint $table) {
             $table->id();
             $table->foreignId('user_id')->index();
-            $table->string('title');
+            $table->string('title', length: 120);
             $table->text('description')->nullable();
             $table->timestamps();
             $table->timestamp('deleted_at')->nullable();

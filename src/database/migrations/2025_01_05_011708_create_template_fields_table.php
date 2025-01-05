@@ -14,9 +14,9 @@ return new class extends Migration
         Schema::create('template_fields', function (Blueprint $table) {
             $table->id();
             $table->foreignId('template_id')->index();
-            $table->string('label');
-            $table->string('name');
-            $table->string('type');
+            $table->string('label', length: 80);
+            $table->string('name', length: 80);
+            $table->string('type', length: 10);
             $table->integer('order');
             $table->text('extended_options')->nullable();
             $table->timestamps();
