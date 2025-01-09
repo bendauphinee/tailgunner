@@ -5,3 +5,31 @@
 [x-cloak] {
     display: none;
 }
+
+table.style01{
+    @apply min-w-full bg-white border border-gray-300 rounded-md;
+}
+
+table.style01 thead th{
+    @apply px-4 py-2 text-left text-gray-50 bg-gray-700 border-b-4;
+}
+
+table.style01 tbody tr:nth-child(even){
+    @apply bg-gray-200;
+}
+
+table.style01 tbody tr:hover{
+    @apply bg-green-100;
+}
+
+table.style01 tbody td{
+    @apply px-4 py-2 text-left text-gray-900 border-b align-text-top;
+}
+
+table.style01 button{
+    @apply mx-1 px-3 py-1 text-xs text-white rounded bg-slate-400;
+}
+
+table.style01 button:hover{
+    @apply bg-blue-800;
+}
