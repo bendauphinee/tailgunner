@@ -39,9 +39,14 @@ const form = ref({
 const createTemplate = () => {
     axios.post('/templates', { title: form.value.title })
         .then(response => {
+            // Clean up the form
             showDialog.value = false;
             form.value.title = '';
+
+            // Add the new template to the list
             templates.value.unshift(response.data.template);
+
+            // Trigger our flash message
             flash.value = {
                 message: response.data.message,
                 data: response.data.template
@@ -113,7 +118,10 @@ watch(
                     <div v-if="flash" class="ilf_success">
                         <span class="block sm:inline">
                             Successfully created new template "{{ flash.data.title }}"
-                            <button class="edit" @click="btnClick(`Edit Template ${flash.data.id}`)">Edit Template</button>
+                            <button
+                                class="edit"
+                                @click="btnClick(`Edit Template ${flash.data.id}`)"
+                            >Edit Template</button>
                         </span>
                         <button @click="dismissFlash" class="close">
                             <span class="text-2xl">&times;</span>

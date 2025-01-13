@@ -5,7 +5,6 @@ namespace App\Http\Controllers;
 use App\Models\Template;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
-use Inertia\Response;
 
 class TemplateController extends Controller
 {
@@ -49,8 +48,6 @@ class TemplateController extends Controller
             'title' => $validated['title'],
             'user_id' => auth()->id(),
         ]);
-
-        \Log::info('Template created', ['template_id' => $template->id, 'title' => $template->title, 'user_id' => auth()->id()]);
 
         // Pass back the data for the new template, and a flash message
         return response()->json([
