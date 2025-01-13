@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Template;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
+use Inertia\Response;
 
 class TemplateController extends Controller
 {
@@ -33,7 +34,35 @@ class TemplateController extends Controller
 
         // Send back the Inertia template and template data
         return Inertia::render('Templates/Index', [
-            'templates' => $templates
+            'templates' => $templates,
+            'flash' => [
+                'success' => session('success')  // Get flash from session
+            ]
         ]);
+    }
+
+    public function store(Request $request)
+    {
+        $validated = $request->validate([
+            'title' => 'required|string|max:120',
+        ]);
+
+        // Make us a new template
+        $template = Template::create([
+            'title' => $validated['title'],
+            'user_id' => auth()->id(),
+        ]);
+
+        \Log::info('Template created', ['template_id' => $template->id, 'title' => $template->title, 'user_id' => auth()->id()]);
+
+        // Flash success message to session
+        session()->flash('success', [
+            'data' => [
+                'id' => $template->id,
+                'title' => $template->title,
+            ]
+        ]);
+
+        return Inertia::location(route('templates.index'));
     }
 }
