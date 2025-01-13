@@ -34,10 +34,7 @@ class TemplateController extends Controller
 
         // Send back the Inertia template and template data
         return Inertia::render('Templates/Index', [
-            'templates' => $templates,
-            'flash' => [
-                'success' => session('success')  // Get flash from session
-            ]
+            'templates' => $templates
         ]);
     }
 
@@ -55,14 +52,24 @@ class TemplateController extends Controller
 
         \Log::info('Template created', ['template_id' => $template->id, 'title' => $template->title, 'user_id' => auth()->id()]);
 
-        // Flash success message to session
-        session()->flash('success', [
-            'data' => [
+        // Pass back the data for the new template, and a flash message
+        return response()->json([
+            'template' => [
                 'id' => $template->id,
                 'title' => $template->title,
+                'description' => '',
+                'created_at' => $template->created_at,
+                'last_used' => $template->created_at,
+                'records' => 0,
+            ],
+            'flash' => [
+                'success' => [
+                    'data' => [
+                        'id' => $template->id,
+                        'title' => $template->title,
+                    ]
+                ]
             ]
         ]);
-
-        return Inertia::location(route('templates.index'));
     }
 }

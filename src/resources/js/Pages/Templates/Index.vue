@@ -21,7 +21,14 @@ const formatDate = (date) => dayjs(date).format('YYYY-MM-DD HH:mm:ss Z');
 // Generic button click message function
 const btnClick = (message) => {window.alert(message)}
 
-// Handle the add template form
+/*
+ * Set up the current page in a way we can access,
+ * and grab the templates so we can modify them when needed
+ */
+const page = usePage();
+const templates = ref(page.props.templates);
+
+// Set some variables for the add template form
 const showDialog = ref(false);
 const form = ref({
     title: '',
@@ -29,23 +36,25 @@ const form = ref({
 });
 
 // Save the template
-const createTemplate = async () => {
-    router.post('/templates',
-        { title: form.value.title },
-        {
-            onSuccess: () => {
-                showDialog.value = false;
-                form.value.title = '';
-            },
-            onError: (errors) => {
-                form.value.errors = errors;
-            }
+const createTemplate = () => {
+    axios.post('/templates', { title: form.value.title })
+        .then(response => {
+            showDialog.value = false;
+            form.value.title = '';
+            templates.value.unshift(response.data.template);
+            flash.value = {
+                message: response.data.message,
+                data: response.data.template
+            };
+        })
+        .catch(error => {
+            form.value.errors = error.response.data.errors;
         });
-}
+};
 
 // Check for and handle the flash message
-const page = usePage();
 const flash = ref(null);
+const dismissFlash = () => {flash.value = null;};
 
 watch(
     () => page.props.flash?.success,
@@ -56,10 +65,6 @@ watch(
     },
     { immediate: true }
 );
-
-const dismissFlash = () => {
-    flash.value = null;
-};
 </script>
 
 <template>
