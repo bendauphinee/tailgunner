@@ -1,4 +1,7 @@
 <script setup>
+import { ref, watch } from 'vue';
+import { usePage } from '@inertiajs/vue3';
+
 import AppLayout from '@/Layouts/AppLayout.vue';
 
 import dayjs from 'dayjs';
@@ -15,20 +18,116 @@ defineProps({
 const relDate = (date) => dayjs(date).fromNow();
 const formatDate = (date) => dayjs(date).format('YYYY-MM-DD HH:mm:ss Z');
 
+// Generic button click message function
 const btnClick = (message) => {window.alert(message)}
+
+/*
+ * Set up the current page in a way we can access,
+ * and grab the templates so we can modify them when needed
+ */
+const page = usePage();
+const templates = ref(page.props.templates);
+
+// Set some variables for the add template form
+const showDialog = ref(false);
+const form = ref({
+    title: '',
+    errors: null
+});
+
+// Save the template
+const createTemplate = () => {
+    axios.post('/templates', { title: form.value.title })
+        .then(response => {
+            // Clean up the form
+            showDialog.value = false;
+            form.value.title = '';
+
+            // Add the new template to the list
+            templates.value.unshift(response.data.template);
+
+            // Trigger our flash message
+            flash.value = {
+                message: response.data.message,
+                data: response.data.template
+            };
+        })
+        .catch(error => {
+            form.value.errors = error.response.data.errors;
+        });
+};
+
+// Check for and handle the flash message
+const flash = ref(null);
+const dismissFlash = () => {flash.value = null;};
+
+watch(
+    () => page.props.flash?.success,
+    (newFlash) => {
+        if (newFlash) {
+            flash.value = newFlash;
+        }
+    },
+    { immediate: true }
+);
 </script>
 
 <template>
+    <div v-if="showDialog" class="dialog-overlay">
+        <div class="dialog">
+            <h3 class="title">Create New Template</h3>
+            <form @submit.prevent="createTemplate">
+                <input
+                    v-model="form.title"
+                    type="text"
+                    placeholder="Template Name"
+                    id="name"
+                    class="w-full p-2 border rounded mb-4"
+                    :class="{ 'border-red-500': form.errors?.title }"
+                />
+                <p v-if="form.errors?.title" class="text-red-500 text-sm mb-2">
+                    {{ form.errors.title }}
+                </p>
+                <div class="flex justify-end gap-2">
+                    <button class="cancel_button" @click="showDialog = false">Cancel</button>
+                    <button
+                        class="add_button"
+                        type="submit"
+                        :disabled="form.processing"
+                    >Save</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
     <AppLayout title="Templates">
         <template #header>
-            <h2 class="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">
-                Templates
-            </h2>
+            <div class="template_header">
+                <h2>
+                    Templates
+                </h2>
+                <button class="add_button" @click="showDialog = true">
+                    Add New Template
+                </button>
+            </div>
         </template>
 
         <div class="py-1">
             <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
                 <div class="bg-white dark:bg-gray-800 overflow-x-auto shadow-xl sm:rounded-lg">
+                    <div v-if="flash" class="ilf_success">
+                        <span class="block sm:inline">
+                            Successfully created new template "{{ flash.data.title }}"
+                            <button
+                                class="edit"
+                                @click="btnClick(`Edit Template ${flash.data.id}`)"
+                            >Edit Template</button>
+                        </span>
+                        <button @click="dismissFlash" class="close">
+                            <span class="text-2xl">&times;</span>
+                        </button>
+                    </div>
+
                     <table v-if="templates.length" class="style01">
                         <thead>
                             <tr>

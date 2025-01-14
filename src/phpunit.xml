@@ -29,5 +29,8 @@
         <env name="QUEUE_CONNECTION" value="sync"/>
         <env name="SESSION_DRIVER" value="array"/>
         <env name="TELESCOPE_ENABLED" value="false"/>
+
+        <env name="DB_DATABASE" value="tailgunner_testing"/>
+        <env name="DB_CONNECTION" value="mysql"/>
     </php>
 </phpunit>

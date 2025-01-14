@@ -36,4 +36,37 @@ class TemplateController extends Controller
             'templates' => $templates
         ]);
     }
+
+    public function store(Request $request)
+    {
+        $validated = $request->validate([
+            'title' => 'required|string|max:120',
+        ]);
+
+        // Make us a new template
+        $template = Template::create([
+            'title' => $validated['title'],
+            'user_id' => auth()->id(),
+        ]);
+
+        // Pass back the data for the new template, and a flash message
+        return response()->json([
+            'template' => [
+                'id' => $template->id,
+                'title' => $template->title,
+                'description' => '',
+                'created_at' => $template->created_at,
+                'last_used' => $template->created_at,
+                'records' => 0,
+            ],
+            'flash' => [
+                'success' => [
+                    'data' => [
+                        'id' => $template->id,
+                        'title' => $template->title,
+                    ]
+                ]
+            ]
+        ]);
+    }
 }
