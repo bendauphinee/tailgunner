@@ -89,7 +89,7 @@ watch(
                     {{ form.errors.title }}
                 </p>
                 <div class="flex justify-end gap-2">
-                    <button @click="showDialog = false" class="cancel_button">Cancel</button>
+                    <button class="cancel_button" @click="showDialog = false">Cancel</button>
                     <button
                         class="add_button"
                         type="submit"
