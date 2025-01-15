@@ -16,8 +16,9 @@ mkdir -p $SHARED_PATH/storage
 cd $RELEASE_PATH
 
 # Extract deployment package
-tar xzf ~/deploy.tar.gz
-rm ~/deploy.tar.gz
+TARBALL="$(ls ~/deploy-*.tar.gz)"
+tar xzf "$TARBALL"
+rm "$TARBALL"
 
 # Link shared directories
 rm -rf $RELEASE_PATH/storage
