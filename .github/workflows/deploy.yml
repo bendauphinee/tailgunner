@@ -65,3 +65,16 @@ jobs:
           source: "src/deploy-*.tar.gz"
           target: "~/deployments/"
           strip_components: 1
+
+      - name: Unpack and finalize
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.SERVER_HOST }}
+          username: ${{ secrets.SERVER_USER }}
+          key: ${{ secrets.SERVER_SSH_KEY }}
+          script: |
+            TIMESTAMP="$(ls ~/deployments/deploy-*.tar.gz | sed -E 's/.*deploy-(.+)\.tar\.gz/\1/g')"
+            mkdir -p ~/releases/${TIMESTAMP}
+            tar -xzf ~/deployments/deploy-${TIMESTAMP}.tar.gz -C ~/releases/${TIMESTAMP}
+            ln -s ~/shared/storage ~/releases/${TIMESTAMP}/src/storage
+            ln -s ~/shared/.env ~/releases/${TIMESTAMP}/src/.env
