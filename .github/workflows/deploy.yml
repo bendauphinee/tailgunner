@@ -17,24 +17,6 @@ jobs:
         working-directory: ./
 
     steps:
-      - name: Debug secrets existence
-        run: |
-          if [ -z "${{ secrets.SERVER_HOST }}" ]; then
-            echo "SERVER_HOST is not set."
-          else
-            echo "SERVER_HOST is set."
-          fi
-          if [ -z "${{ secrets.SERVER_USER }}" ]; then
-            echo "SERVER_USER is not set."
-          else
-            echo "SERVER_USER is set."
-          fi
-          if [ -z "${{ secrets.SERVER_SSH_KEY }}" ]; then
-            echo "SERVER_SSH_KEY is not set."
-          else
-            echo "SERVER_SSH_KEY is set."
-          fi
-
       - name: Create Test File
         run: |
           touch test_12.txt
@@ -47,7 +29,3 @@ jobs:
           key: ${{ secrets.SERVER_SSH_KEY }}
           source: "test_12.txt"
           target: "~/public_html"
-          strip_components: 1
-          debug: true
-          port: 22
-          isSSHKey: true
