@@ -42,14 +42,6 @@ jobs:
           npm ci
           npm run build
 
-      - name: Create Environment File
-        run: |
-          echo "${{ secrets.LARAVEL_ENV }}" > .env
-          php artisan config:cache
-          php artisan route:cache
-          php artisan view:cache
-          php artisan storage:link
-
       - name: Create Deployment Package
         run: |
           # Move up one directory
@@ -87,6 +79,6 @@ jobs:
             cd ~/public_html
             tar xzf deploy.tar.gz
             rm deploy.tar.gz
-            chmod +x ~/deploy-to-prod.sh
-            ~/deploy-to-prod.sh
+            # chmod +x ~/deploy-to-prod.sh
+            # ~/deploy-to-prod.sh ${{ secrets.SERVER_USER }}
 
