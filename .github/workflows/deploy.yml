@@ -42,7 +42,6 @@ jobs:
           VITE_APP_URL: https://tailgunner.app
           NODE_ENV: production
         run: |
-          cd src  # Ensure we're in correct directory
           npm install -g vite  # Install vite globally
           npm ci
           npm run build || {
