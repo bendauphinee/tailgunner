@@ -51,14 +51,21 @@ jobs:
 
       - name: Create Deployment Package
         run: |
+          # Move up one directory
+          cd ..
+
+          # Create tar from src directory
           tar -czf deploy.tar.gz \
+            --exclude='node_modules' \
             --exclude='.git*' \
-            --exclude='src/node_modules' \
-            --exclude='src/tests' \
-            --exclude='src/storage/logs/*' \
-            --exclude='src/storage/framework/cache/*' \
-            --exclude='src/storage/framework/sessions/*' \
-            .
+            --exclude='tests' \
+            --exclude='storage/logs/*' \
+            --exclude='storage/framework/cache/*' \
+            --exclude='storage/framework/sessions/*' \
+            src/
+
+          # Move tar back to working directory
+          mv deploy.tar.gz src/
 
       - name: Deploy to Production
         uses: appleboy/ssh-action@v1.0.3
@@ -66,6 +73,8 @@ jobs:
           host: ${{ secrets.SERVER_HOST }}
           username: ${{ secrets.SERVER_USER }}
           key: ${{ secrets.SERVER_SSH_KEY }}
+          source: "src/deploy.tar.gz"
+          target: "~/public_html"
           script: |
             chmod +x ~/deploy-to-prod.sh
             ~/deploy-to-prod.sh
