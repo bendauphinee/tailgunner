@@ -41,12 +41,15 @@ jobs:
         env:
           VITE_APP_URL: https://tailgunner.app
           NODE_ENV: production
+        working-directory: ./src
         run: |
-          npm install -g vite  # Install vite globally
           npm ci
+          npm install vite @vitejs/plugin-vue # Install vite locally
           npm run build || {
-            echo "Build failed - checking vite installation"
+            echo "Build failed - checking installation:"
+            ls -la node_modules/.bin/vite
             npm list vite
+            cat package.json
             exit 1
           }
 
