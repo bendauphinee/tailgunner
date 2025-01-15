@@ -44,24 +44,21 @@ jobs:
         working-directory: ./src
         run: |
           echo "Cleaning up previous build artifacts..."
-          rm -rf node_modules public/build
+          rm -rf node_modules package-lock.json public/build
 
           echo "Installing fresh dependencies..."
-          npm install --no-audit --no-fund --production=false
+          npm cache clean --force
+          npm install --no-fund
 
           echo "Building assets..."
           npm run build || {
             echo "Build failed! Debugging information:"
             echo "Node version: $(node -v)"
             echo "NPM version: $(npm -v)"
-            echo "Package.json contents:"
-            cat package.json
-            echo "Vite config:"
-            cat vite.config.js
-            echo "Node modules:"
-            ls -la node_modules/.bin/
-            echo "Dependency tree:"
-            npm list --depth=1
+            echo "Installed packages:"
+            npm ls dayjs
+            echo "Build directory contents:"
+            ls -la public/build || true
             exit 1
           }
 
@@ -69,7 +66,7 @@ jobs:
           if [ ! -d "public/build" ]; then
             echo "Error: Build directory not created"
             exit 1
-          fi
+
 
       - name: Create Deployment Package
         run: |
