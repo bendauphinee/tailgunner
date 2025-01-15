@@ -38,6 +38,9 @@ jobs:
         run: composer install --no-dev --optimize-autoloader --prefer-dist
 
       - name: Install NPM Dependencies & Build Assets
+        env:
+          VITE_APP_URL: https://tailgunner.app
+          NODE_ENV: production
         run: |
           npm ci
           npm run build
@@ -79,5 +82,12 @@ jobs:
             RELEASE_PATH=~/deployments/releases/${TIMESTAMP}
             mkdir -p ${RELEASE_PATH}
             tar -xzf "$TARBALL" -C ${RELEASE_PATH}
+
+            # Ensure built assets exist
+            if [ ! -d "${RELEASE_PATH}/src/public/build" ]; then
+              echo "Error: Built assets not found"
+              exit 1
+            fi
+
             ln -s ~/shared/storage ${RELEASE_PATH}/src/storage
             ln -s ~/shared/.env ${RELEASE_PATH}/src/.env
