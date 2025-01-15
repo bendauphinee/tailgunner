@@ -76,6 +76,7 @@ jobs:
           source: "src/deploy.tar.gz"
           target: "~/public_html"
           strip_components: 1
+          debug: true # Add debug output
 
       - name: Deploy to Production
         uses: appleboy/ssh-action@v1.0.3
