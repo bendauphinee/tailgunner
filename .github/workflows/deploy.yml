@@ -14,12 +14,59 @@ jobs:
 
     defaults:
       run:
-        working-directory: ./
+        working-directory: ./src
 
     steps:
-      - name: Create Test File
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.4'
+          extensions: mbstring, pdo, bcmath, json, xml, zip
+          coverage: none
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+          cache-dependency-path: './src/package-lock.json'
+
+      - name: Install Composer Dependencies
+        run: composer install --no-dev --optimize-autoloader --prefer-dist
+
+      - name: Install NPM Dependencies & Build Assets
         run: |
-          touch test_12.txt
+          npm ci
+          npm run build
+
+      - name: Create Environment File
+        run: |
+          echo "${{ secrets.LARAVEL_ENV }}" > .env
+          php artisan config:cache
+          php artisan route:cache
+          php artisan view:cache
+          php artisan storage:link
+
+      - name: Create Deployment Package
+        run: |
+          # Move up one directory
+          cd ..
+
+          # Create tar from src directory
+          tar -czf deploy.tar.gz \
+            --exclude='node_modules' \
+            --exclude='.git*' \
+            --exclude='tests' \
+            --exclude='storage/logs/*' \
+            --exclude='storage/framework/cache/*' \
+            --exclude='storage/framework/sessions/*' \
+            src/
+
+          # Move tar back to working directory
+          mv deploy.tar.gz src/
 
       - name: Copy deployment package
         uses: appleboy/scp-action@master
@@ -27,5 +74,19 @@ jobs:
           host: ${{ secrets.SERVER_HOST }}
           username: ${{ secrets.SERVER_USER }}
           key: ${{ secrets.SERVER_SSH_KEY }}
-          source: "test_12.txt"
+          source: "src/deploy.tar.gz"
           target: "~/public_html"
+
+      - name: Deploy to Production
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.SERVER_HOST }}
+          username: ${{ secrets.SERVER_USER }}
+          key: ${{ secrets.SERVER_SSH_KEY }}
+          script: |
+            cd ~/public_html
+            tar xzf deploy.tar.gz
+            rm deploy.tar.gz
+            chmod +x ~/deploy-to-prod.sh
+            ~/deploy-to-prod.sh
+
