@@ -43,22 +43,33 @@ jobs:
           NODE_ENV: production
         working-directory: ./src
         run: |
-          rm -rf node_modules package-lock.json
-          npm cache clean --force
-          npm ci
+          echo "Cleaning up previous build artifacts..."
+          rm -rf node_modules public/build
+
+          echo "Installing fresh dependencies..."
+          npm install --no-audit --no-fund --production=false
+
+          echo "Building assets..."
           npm run build || {
-            echo "Build failed with detailed debug info:"
+            echo "Build failed! Debugging information:"
             echo "Node version: $(node -v)"
             echo "NPM version: $(npm -v)"
-            echo "Vite executable location:"
-            which vite || true
-            echo "node_modules contents:"
-            ls -la node_modules/.bin/ || true
-            echo "Package versions:"
-            npm list vite
-            npm list @vitejs/plugin-vue
+            echo "Package.json contents:"
+            cat package.json
+            echo "Vite config:"
+            cat vite.config.js
+            echo "Node modules:"
+            ls -la node_modules/.bin/
+            echo "Dependency tree:"
+            npm list --depth=1
             exit 1
           }
+
+          echo "Verifying build output..."
+          if [ ! -d "public/build" ]; then
+            echo "Error: Build directory not created"
+            exit 1
+          fi
 
       - name: Create Deployment Package
         run: |
