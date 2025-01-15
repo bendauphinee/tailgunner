@@ -73,8 +73,9 @@ jobs:
           username: ${{ secrets.SERVER_USER }}
           key: ${{ secrets.SERVER_SSH_KEY }}
           script: |
-            TIMESTAMP="$(ls ~/deployments/deploy-*.tar.gz | sed -E 's/.*deploy-(.+)\.tar\.gz/\1/g')"
+            TARBALL="$(ls -1t ~/deployments/deploy-*.tar.gz | head -n1)"
+            TIMESTAMP="$(basename "$TARBALL" | sed -E 's/.*deploy-(.+)\.tar\.gz/\1/g')"
             mkdir -p ~/releases/${TIMESTAMP}
-            tar -xzf ~/deployments/deploy-${TIMESTAMP}.tar.gz -C ~/releases/${TIMESTAMP}
+            tar -xzf "$TARBALL" -C ~/releases/${TIMESTAMP}
             ln -s ~/shared/storage ~/releases/${TIMESTAMP}/src/storage
             ln -s ~/shared/.env ~/releases/${TIMESTAMP}/src/.env
