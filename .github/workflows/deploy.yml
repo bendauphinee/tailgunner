@@ -103,3 +103,6 @@ jobs:
             php artisan route:cache || exit 1
             php artisan view:cache || exit 1
             php artisan storage:link || exit 1
+
+            # Relink the release directory
+            rm ~/public_html && ln -s ${RELEASE_PATH}/src ~/public_html
