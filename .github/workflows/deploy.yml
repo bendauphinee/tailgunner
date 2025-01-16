@@ -43,30 +43,8 @@ jobs:
           NODE_ENV: production
         working-directory: ./src
         run: |
-          echo "Cleaning up previous build artifacts..."
-          rm -rf node_modules package-lock.json public/build
-
-          echo "Installing fresh dependencies..."
-          npm cache clean --force
-          npm install --no-fund
-
-          echo "Building assets..."
-          npm run build || {
-            echo "Build failed! Debugging information:"
-            echo "Node version: $(node -v)"
-            echo "NPM version: $(npm -v)"
-            echo "Installed packages:"
-            npm ls dayjs
-            echo "Build directory contents:"
-            ls -la public/build || true
-            exit 1
-          }
-
-          echo "Verifying build output..."
-          if [ ! -d "public/build" ]; then
-            echo "Error: Build directory not created"
-            exit 1
-
+          npm ci
+          npm run build
 
       - name: Create Deployment Package
         run: |
