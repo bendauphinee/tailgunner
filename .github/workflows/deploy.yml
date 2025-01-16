@@ -52,6 +52,8 @@ jobs:
           npm install
           node node_modules/vite/bin/vite.js build
 
+          rm .env
+
       - name: Create Deployment Package
         run: |
           TIMESTAMP="$(date +%Y-%m-%d-%H-%M-%S)"
@@ -90,5 +92,14 @@ jobs:
             mkdir -p ${RELEASE_PATH}
             tar -xzf "$TARBALL" -C ${RELEASE_PATH}
 
+            # Remove and link storage directory
+            rm -Rf ${RELEASE_PATH}/src/storage
             ln -s ~/shared/storage ${RELEASE_PATH}/src/storage
             ln -s ~/shared/.env ${RELEASE_PATH}/src/.env
+
+            # Refresh Laravel caches
+            cd ${RELEASE_PATH}/src
+            php artisan config:clear || exit 1
+            php artisan route:cache || exit 1
+            php artisan view:cache || exit 1
+            php artisan storage:link || exit 1
