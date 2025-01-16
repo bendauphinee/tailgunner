@@ -32,9 +32,6 @@ jobs:
           extensions: mbstring, pdo, bcmath, json, xml, zip
           coverage: none
 
-      - name: Install Composer Dependencies
-        run: composer install --no-dev --optimize-autoloader --prefer-dist
-
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
@@ -42,11 +39,15 @@ jobs:
           cache: 'npm'
           cache-dependency-path: './src/package-lock.json' # Specifies non-default lock file location
 
+      - name: Install Composer Dependencies
+        run: composer install --no-dev --optimize-autoloader --prefer-dist
+
       - name: Install NPM Dependencies & Build Assets
         env:
           VITE_APP_NAME: Tailgunner
           VITE_APP_URL: https://tailgunner.app
           NODE_ENV: production
+        working-directory: ./src
         run: |
           # Setup environment variables
           echo "VITE_APP_ADDRESS=$VITE_APP_URL" >> .env
@@ -66,6 +67,8 @@ jobs:
             --exclude='storage/logs/*' \
             --exclude='storage/framework/cache/*' \
             --exclude='storage/framework/sessions/*' \
+            --exclude='.env*' \
+            --exclude='phpunit.xml' \
             src/
           mv "deploy-${TIMESTAMP}.tar.gz" src/
 
@@ -75,8 +78,8 @@ jobs:
           host: ${{ secrets.SERVER_HOST }}
           username: ${{ secrets.SERVER_USER }}
           key: ${{ secrets.SERVER_SSH_KEY }}
-          source: "src/deploy-*.tar.gz"
-          target: "~/deployments/"
+          source: "src/deploy-*.tar.gz,.github/workflows/deploy-to-prod.sh"
+          target: "~/deployments"
           strip_components: 2
           overwrite: true
 
