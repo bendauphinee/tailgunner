@@ -43,6 +43,17 @@ jobs:
           NODE_ENV: production
         working-directory: ./src
         run: |
+          # Debug env vars
+          echo "Environment variables:"
+          echo "VITE_APP_URL=$VITE_APP_URL"
+          echo "NODE_ENV=$NODE_ENV"
+
+          # Create temp debug config
+          echo "console.log('Vite env:', {" > vite.config.debug.js
+          echo "  VITE_APP_URL: process.env.VITE_APP_URL," >> vite.config.debug.js
+          echo "  NODE_ENV: process.env.NODE_ENV" >> vite.config.debug.js
+          echo "});" >> vite.config.debug.js
+
           rm -rf node_modules package-lock.json
           npm install
           node node_modules/vite/bin/vite.js build
