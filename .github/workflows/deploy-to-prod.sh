@@ -11,7 +11,7 @@ mkdir -p ${RELEASE_PATH}
 tar -xzf "$TARBALL" -C ${RELEASE_PATH}
 
 # Remove and link storage directory
-rm -Rf ${RELEASE_PATH}/src/storage
+rm -Rf ${RELEASE_PATH}/src/storage ${RELEASE_PATH}/src/.env
 ln -s ~/shared/storage ${RELEASE_PATH}/src/storage
 ln -s ~/shared/.env ${RELEASE_PATH}/src/.env
 
