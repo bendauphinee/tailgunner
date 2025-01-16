@@ -43,7 +43,8 @@ jobs:
           NODE_ENV: production
         working-directory: ./src
         run: |
-          npm ci
+          rm -rf node_modules package-lock.json
+          npm install
           node node_modules/vite/bin/vite.js build
 
       - name: Create Deployment Package
