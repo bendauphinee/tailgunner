@@ -71,6 +71,7 @@ jobs:
             --exclude='phpunit.xml' \
             src/
           mv "deploy-${TIMESTAMP}.tar.gz" src/
+          ls src/
 
       - name: Copy deployment package and script
         uses: appleboy/scp-action@master
