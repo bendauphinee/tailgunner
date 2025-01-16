@@ -57,7 +57,7 @@ jobs:
 
       - name: Create Deployment Package
         run: |
-          TIMESTAMP="deploy-$(date +%Y-%m-%d-%H-%M-%S)"
+          TIMESTAMP="$(date +%Y-%m-%d-%H-%M-%S)"
           cd ..
           tar -czf "deploy-${TIMESTAMP}.tar.gz" \
             --exclude='node_modules' \
