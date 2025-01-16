@@ -108,7 +108,7 @@ jobs:
             php artisan storage:link || exit 1
 
             # Run migrations
-            php artisan migrate || exit 1
+            php artisan migrate --force || exit 1
 
             # Relink the release directory
             ln -sfn ${RELEASE_PATH}/src ~/public_html
