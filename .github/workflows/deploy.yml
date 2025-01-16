@@ -39,19 +39,14 @@ jobs:
 
       - name: Install NPM Dependencies & Build Assets
         env:
+          VITE_APP_NAME: Tailgunner
           VITE_APP_URL: https://tailgunner.app
           NODE_ENV: production
         working-directory: ./src
         run: |
-          # Debug env vars
-
-          echo "Environment variables:"
-          echo "VITE_APP_URL=$VITE_APP_URL"
-          echo "NODE_ENV=$NODE_ENV"
-
-          # Create temp debug config
-          echo "  VITE_APP_URL: $VITE_APP_URL," >> vite.config.debug.js
-          echo "  NODE_ENV: $NODE_ENV" >> vite.config.debug.js
+          # Setup environment variables
+          echo "VITE_APP_ADDRESS=$VITE_APP_URL" >> .env
+          echo "VITE_APP_NAME=$VITE_APP_NAME" >> .env
 
           rm -rf node_modules package-lock.json
           npm install
