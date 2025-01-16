@@ -85,10 +85,13 @@ jobs:
           username: ${{ secrets.SERVER_USER }}
           key: ${{ secrets.SERVER_SSH_KEY }}
           script: |
-            DEPLOY_PATH=~/deployments
-            TARBALL="$(ls -1t ${DEPLOY_PATH}/deploy-*.tar.gz | head -n1)"
+            BASE_DEPLOY_PATH=~/deployments
+            TARBALL="$(ls -1t ${BASE_DEPLOY_PATH}/deploy-*.tar.gz | head -n1)"
             TIMESTAMP="$(basename "$TARBALL" | sed -E 's/.*deploy-(.+)\.tar\.gz/\1/g')"
-            RELEASE_PATH=~/deployments/releases/${TIMESTAMP}
+            BASE_RELEASE_PATH=~/deployments/releases
+            RELEASE_PATH=${BASE_RELEASE_PATH}/${TIMESTAMP}
+
+            # Create release directory and extract files
             mkdir -p ${RELEASE_PATH}
             tar -xzf "$TARBALL" -C ${RELEASE_PATH}
 
@@ -104,5 +107,19 @@ jobs:
             php artisan view:cache || exit 1
             php artisan storage:link || exit 1
 
+            # Run migrations
+            php artisan migrate || exit 1
+
             # Relink the release directory
-            rm ~/public_html && ln -s ${RELEASE_PATH}/src ~/public_html
+            ln -sfn ${RELEASE_PATH}/src ~/public_html
+
+            # Cleanup old releases and tarballs (keep last 5 of each)
+            echo "Cleaning up old tarballs..."
+            cd ${BASE_DEPLOY_PATH}
+            ls -1t deploy-*.tar.gz | tail -n +6 | xargs -d '\n' rm -f -- 2>/dev/null || true
+
+            echo "Cleaning up old release directories..."
+            cd ${BASE_RELEASE_PATH}
+            ls -1dt */ | tail -n +6 | xargs -d '\n' rm -rf -- 2>/dev/null || true
+
+            echo "Deployment cleanup completed."
