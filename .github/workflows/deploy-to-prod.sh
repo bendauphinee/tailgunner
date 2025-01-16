@@ -1,42 +1,36 @@
 #!/bin/bash
 
-# Take username as argument
-USERNAME=$1
+BASE_DEPLOY_PATH=~/deployments
+TARBALL="$(ls -1t ${BASE_DEPLOY_PATH}/deploy-*.tar.gz | head -n1)"
+TIMESTAMP="$(basename "$TARBALL" | sed -E 's/.*deploy-(.+)\.tar\.gz/\1/g')"
+BASE_RELEASE_PATH=~/deployments/releases
+RELEASE_PATH=${BASE_RELEASE_PATH}/${TIMESTAMP}
 
-# Set deployment directories
-DEPLOY_PATH=/home/$USERNAME/public_html
-RELEASE_PATH=/home/$USERNAME/releases/$(date +%Y%m%d_%H%M%S)
-SHARED_PATH=/home/$USERNAME/shared
+# Create release directory and extract files
+mkdir -p ${RELEASE_PATH}
+tar -xzf "$TARBALL" -C ${RELEASE_PATH}
 
-# Create required directories
-mkdir -p $RELEASE_PATH
-mkdir -p $SHARED_PATH/storage
-
-# Copy deployment package
-cd $RELEASE_PATH
-
-# Extract deployment package
-TARBALL="$(ls ~/deploy-*.tar.gz)"
-tar xzf "$TARBALL"
-rm "$TARBALL"
-
-# Link shared directories
-rm -rf $RELEASE_PATH/storage
-ln -s $SHARED_PATH/storage $RELEASE_PATH/storage
-
-# Update permissions
-chmod -R 755 $RELEASE_PATH
-chown -R www-data:www-data $RELEASE_PATH
+# Remove and link storage directory
+rm -Rf ${RELEASE_PATH}/src/storage
+ln -s ~/shared/storage ${RELEASE_PATH}/src/storage
+ln -s ~/shared/.env ${RELEASE_PATH}/src/.env
 
 # Refresh Laravel caches
-php artisan config:cache
-php artisan route:cache
-php artisan view:cache
-php artisan storage:link
+cd ${RELEASE_PATH}/src
+php artisan config:clear || exit 1
+php artisan route:cache || exit 1
+php artisan view:cache || exit 1
+php artisan storage:link || exit 1
 
-# Activate new release
-ln -sfn $RELEASE_PATH $DEPLOY_PATH
+# Run migrations
+php artisan migrate --force || exit 1
 
-# Clean up old releases (keep last 5)
-cd /home/$USERNAME/releases
-ls -1dt */ | tail -n +6 | xargs -d '\n' rm -rf --
+# Relink the release directory
+ln -sfn ${RELEASE_PATH}/src ~/public_html
+
+# Cleanup old releases and tarballs (keep last 5 of each)
+cd ${BASE_DEPLOY_PATH}
+ls -1t deploy-*.tar.gz | tail -n +6 | xargs -d '\n' rm -f -- 2>/dev/null || true
+
+cd ${BASE_RELEASE_PATH}
+ls -1dt */ | tail -n +6 | xargs -d '\n' rm -rf -- 2>/dev/null || true

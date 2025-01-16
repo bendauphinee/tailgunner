@@ -75,8 +75,9 @@ jobs:
           username: ${{ secrets.SERVER_USER }}
           key: ${{ secrets.SERVER_SSH_KEY }}
           source: "src/deploy-*.tar.gz,.github/workflows/deploy-to-prod.sh"
-          target: "~/deployments/"
-          strip_components: 1
+          target: "~/deployments"
+          strip_components: 2
+          overwrite: true
 
       - name: Unpack and finalize
         uses: appleboy/ssh-action@master
