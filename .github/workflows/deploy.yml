@@ -44,7 +44,7 @@ jobs:
         working-directory: ./src
         run: |
           npm ci
-          npm run build
+          node node_modules/vite/bin/vite.js build
 
       - name: Create Deployment Package
         run: |
