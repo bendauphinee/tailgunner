@@ -40,7 +40,9 @@ jobs:
         with:
           node-version: '20'
           cache: 'npm'
-          cache-dependency-path: './src/package-lock.json' # Specifies non-default lock file location
+
+          # Specifies non-default lock file location
+          cache-dependency-path: './src/package-lock.json'
 
       - name: Install NPM Dependencies & Build Assets
         env:

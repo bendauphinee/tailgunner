@@ -4,6 +4,7 @@ BASE_DEPLOY_PATH=~/deployments
 TARBALL="$(ls -1t ${BASE_DEPLOY_PATH}/deploy-*.tar.gz | head -n1)"
 TIMESTAMP="$(basename "$TARBALL" | sed -E 's/.*deploy-(.+)\.tar\.gz/\1/g')"
 BASE_RELEASE_PATH=~/deployments/releases
+MAX_RELEASES=5
 RELEASE_PATH=${BASE_RELEASE_PATH}/${TIMESTAMP}
 
 # Create release directory and extract files
@@ -30,7 +31,7 @@ ln -sfn ${RELEASE_PATH}/src ~/public_html
 
 # Cleanup old releases and tarballs (keep last 5 of each)
 cd ${BASE_DEPLOY_PATH}
-ls -1t deploy-*.tar.gz | tail -n +6 | xargs -d '\n' rm -f -- 2>/dev/null || true
+ls -1t deploy-*.tar.gz | tail -n +$((MAX_RELEASES + 1)) | xargs -d '\n' rm -f -- 2>/dev/null || true
 
 cd ${BASE_RELEASE_PATH}
-ls -1dt */ | tail -n +6 | xargs -d '\n' rm -rf -- 2>/dev/null || true
+ls -1dt */ | tail -n +$((MAX_RELEASES + 1)) | xargs -d '\n' rm -rf -- 2>/dev/null || true
