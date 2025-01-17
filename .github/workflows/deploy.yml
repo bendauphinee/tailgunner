@@ -44,12 +44,12 @@ jobs:
 
       - name: Install NPM Dependencies & Build Assets
         env:
-          VITE_APP_NAME: Tailgunner
-          VITE_APP_URL: https://tailgunner.app
+          VITE_APP_NAME: ${{ vars.VITE_APP_NAME }}
+          VITE_APP_URL: ${{ vars.VITE_APP_URL }}
           NODE_ENV: production
         working-directory: ./src
         run: |
-          # Setup environment variables
+          # Setup environment variables in a file so Vite can use them
           echo "VITE_APP_ADDRESS=$VITE_APP_URL" >> .env
           echo "VITE_APP_NAME=$VITE_APP_NAME" >> .env
 
