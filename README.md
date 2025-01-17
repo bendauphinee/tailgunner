@@ -1,4 +1,4 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://tailgunner.app/tailgunnerlogo.png" width="400" alt="Laravel Logo"></a></p>
+<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://tailgunner.app/img/tailgunner-logo-full.png" width="400" alt="Laravel Logo"></a></p>
 
 ## About This Project
 
