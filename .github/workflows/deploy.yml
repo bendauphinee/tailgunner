@@ -4,7 +4,6 @@ on:
     push:
       branches:
         - main
-        - '**' # Allow all branches, for testing purposes
 
     workflow_dispatch: # Allow manual triggers
 
