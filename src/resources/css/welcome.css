@@ -1,0 +1,39 @@
+header {
+    @apply grid gap-2 px-10 text-xl bg-zinc-300;
+}
+
+header a{
+    @apply rounded-md px-3 py-2 text-black ring-1 ring-transparent transition
+    hover:text-black/70 focus:outline-none focus-visible:ring-[#FF2D20]
+    dark:text-white dark:hover:text-white/80 dark:focus-visible:ring-white;
+}
+
+a {
+    @apply text-blue-600 !important;
+}
+
+a:hover {
+    @apply text-blue-800 !important;
+}
+
+img {
+    max-width: 90%;
+    max-height: 90%;
+    object-fit: contain;
+}
+
+.post_table {
+    @apply table-auto border-collapse mx-auto mb-10;
+}
+
+.post_table th {
+    @apply bg-slate-700 text-gray-50 text-left px-4 py-2 first:rounded-tl-lg last:rounded-tr-lg;
+}
+
+.post_table td {
+    @apply px-4 py-2 text-left;
+}
+
+.post_table a{
+    @apply text-blue-600 hover:text-blue-800;
+}
