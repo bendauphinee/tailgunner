@@ -23,7 +23,9 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
         with:
-          fetch-depth: 1  # Shallow clone for faster checkout
+
+          # Shallow clone for faster checkout
+          fetch-depth: 1
 
       - name: Setup PHP
         uses: shivammathur/setup-php@v2
@@ -65,7 +67,15 @@ jobs:
             --exclude='storage/framework/sessions/*' \
             --exclude='.env*' \
             --exclude='phpunit.xml' \
+            --exclude='*/.editorconfig' \
             src/
+
+          # Verify archive
+          if [ ! -s "deploy-${TIMESTAMP}.tar.gz" ]; then
+            echo "Error: Empty archive created"
+            exit 1
+          fi
+
           mv "deploy-${TIMESTAMP}.tar.gz" src/
 
       - name: Copy deployment package and script
