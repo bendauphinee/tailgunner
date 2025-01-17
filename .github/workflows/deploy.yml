@@ -50,8 +50,8 @@ jobs:
         working-directory: ./src
         run: |
           # Setup environment variables in a file so Vite can use them
-          echo "VITE_APP_ADDRESS=$VITE_APP_URL" >> .env
-          echo "VITE_APP_NAME=$VITE_APP_NAME" >> .env
+          # echo "VITE_APP_ADDRESS=$VITE_APP_URL" >> .env
+          # echo "VITE_APP_NAME=$VITE_APP_NAME" >> .env
 
           npm ci
           node node_modules/vite/bin/vite.js build
