@@ -94,8 +94,8 @@ defineProps({
                 Initial Development Setup (Dec 22, 2024)
             </a>
         </div>
+        <div class="py-16 text-center text-sm text-black dark:text-white/70">
+            Laravel v{{ laravelVersion }} / PHP v{{ phpVersion }}
+        </div>
     </div>
-    <footer class="py-16 text-center text-sm text-black dark:text-white/70">
-        Laravel v{{ laravelVersion }} (PHP v{{ phpVersion }})
-    </footer>
 </template>

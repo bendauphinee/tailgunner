@@ -14,8 +14,8 @@ class HomeController extends Controller
         return Inertia::render('Welcome', [
             'canLogin' => Route::has('login'),
             'canRegister' => Route::has('register'),
-            'laravelVersion' => \Illuminate\Foundation\Application::VERSION,
-            'phpVersion' => PHP_VERSION,
+            'laravelVersion' => implode('.', array_slice(explode('.', \Illuminate\Foundation\Application::VERSION), 0, 1)),
+            'phpVersion' => implode('.', array_slice(explode('.', PHP_VERSION), 0, 2)),
 
             'blogPosts' => [
                 [
