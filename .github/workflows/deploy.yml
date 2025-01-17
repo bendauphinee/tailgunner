@@ -34,7 +34,7 @@ jobs:
           extensions: mbstring, pdo, bcmath, json, xml, zip
           coverage: none
 
-      - name: Install Composer Dependencies
+      - name: Install Composer dependencies
         run: composer install --no-dev --optimize-autoloader --prefer-dist
 
       - name: Setup Node.js
@@ -46,7 +46,7 @@ jobs:
           # Specifies non-default lock file location
           cache-dependency-path: './src/package-lock.json'
 
-      - name: Install NPM Dependencies & Build Assets
+      - name: Install NPM dependencies & build assets
         env:
           NODE_ENV: production
         working-directory: ./src
@@ -54,7 +54,7 @@ jobs:
           npm ci
           node node_modules/vite/bin/vite.js build
 
-      - name: Create Deployment Package
+      - name: Create deployment package
         run: |
           TIMESTAMP="$(date +%Y-%m-%d-%H-%M-%S)"
           cd ..
