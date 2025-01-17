@@ -58,6 +58,11 @@ class HomeController extends Controller
                     'url' => 'https://bendauphinee.com/writing/2025/01/14/an-app-from-scratch-part-8-creating-new-templates-tool-us1-c3',
                     'date' => 'Jan 14, 2025',
                 ],
+                [
+                    'title' => 'Part 9 – Setting Up Our Production Server And Deployment (US1-C4)',
+                    'url' => 'https://bendauphinee.com/writing/2025/01/17/an-app-from-scratch-part-9-setting-up-our-production-server-and-deployment-us1-c4/',
+                    'date' => 'Jan 17, 2025',
+                ],
             ],
         ]);
     }
