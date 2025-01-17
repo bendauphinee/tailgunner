@@ -8,16 +8,8 @@ on:
     workflow_dispatch: # Allow manual triggers
 
 jobs:
-  deploy:
+  checkout:
     runs-on: ubuntu-latest
-
-    # Define the environment name so we can get the settings from GitHub
-    environment: Tailgunner Production
-
-    defaults:
-      run:
-        working-directory: ./src
-
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -25,6 +17,10 @@ jobs:
           # Shallow clone for faster checkout
           fetch-depth: 1
 
+  setup:
+    runs-on: ubuntu-latest
+    needs: checkout
+    steps:
       - name: Setup PHP
         uses: shivammathur/setup-php@v2
         with:
@@ -44,14 +40,21 @@ jobs:
           # Specifies non-default lock file location
           cache-dependency-path: './src/package-lock.json'
 
+  build:
+    runs-on: ubuntu-latest
+    needs: setup
+    steps:
       - name: Install NPM dependencies & build assets
         env:
           NODE_ENV: production
-        working-directory: ./src
         run: |
           npm ci
           node node_modules/vite/bin/vite.js build
 
+  package:
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
       - name: Create deployment package
         run: |
           TIMESTAMP="$(date +%Y-%m-%d-%H-%M-%S)"
@@ -76,6 +79,10 @@ jobs:
 
           mv "deploy-${TIMESTAMP}.tar.gz" src/
 
+  deploy:
+    runs-on: ubuntu-latest
+    needs: package
+    steps:
       - name: Copy deployment package and script
         uses: appleboy/scp-action@master
         with:
