@@ -20,6 +20,10 @@
         @vite(['resources/js/app.js', "resources/js/Pages/{$page['component']}.vue"])
         @inertiaHead
     </head>
+    @production
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-T5Z17XWJ7W"></script>
+    <script>window.dataLayer = window.dataLayer || [];function gtag(){dataLayer.push(arguments);}gtag('js', new Date());gtag('config', 'G-T5Z17XWJ7W');</script>
+    @endproduction
     <body class="font-sans antialiased">
         @inertia
     </body>
