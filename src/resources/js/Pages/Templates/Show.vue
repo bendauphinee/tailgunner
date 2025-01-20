@@ -15,6 +15,10 @@ const btnClick = (message) => {window.alert(message)}
 
 const fieldTypes = ['integer', 'string', 'text', 'dropdown'];
 
+const removeOption = (field, index) => {
+    field.extended_options.splice(index, 1);
+};
+
 // Watch for changes in template fields and parse extended_options if needed
 const parseExtendedOptions = (fields) => {
     fields.forEach(field => {
@@ -48,6 +52,34 @@ watch(() => props.template, () => {
         isModified.value = currentState !== originalState.value;
     }
 }, { deep: true });
+
+const currentDragIndex = ref(null);
+
+const handleDragStart = (index, field, event) => {
+    currentDragIndex.value = index;
+    event.dataTransfer.effectAllowed = 'move';
+};
+
+const handleDragOver = (index, field, event) => {
+    event.preventDefault();
+    if (index !== currentDragIndex.value) {
+        const items = field.extended_options;
+        const draggedItem = items[currentDragIndex.value];
+        const remainingItems = items.filter((_, i) => i !== currentDragIndex.value);
+        const reorderedItems = [
+            ...remainingItems.slice(0, index),
+            draggedItem,
+            ...remainingItems.slice(index)
+        ];
+        field.extended_options = reorderedItems;
+        currentDragIndex.value = index;
+    }
+};
+
+const handleDragEnd = () => {
+    currentDragIndex.value = null;
+};
+
 </script>
 
 <template>
@@ -113,17 +145,23 @@ watch(() => props.template, () => {
                                         </option>
                                     </select>
                                     <div v-if="field.type === 'dropdown'" class="mt-2">
-                                        <div v-for="(option, index) in field.extended_options || []" :key="index" class="flex items-center gap-2 mb-2">
+                                        <div v-for="(option, index) in field.extended_options || []"
+                                             :key="index"
+                                             class="option-row flex items-center gap-2 mb-2"
+                                             :class="{ 'dragging': currentDragIndex === index }"
+                                             draggable="true"
+                                             @dragstart="handleDragStart(index, field, $event)"
+                                             @dragover.prevent="handleDragOver(index, field, $event)"
+                                             @dragend="handleDragEnd"
+                                            >
+                                            <font-awesome-icon :icon="['fas', 'grip-vertical']" class="cursor-move" />
                                             <input
                                                 type="text"
                                                 v-model="field.extended_options[index]"
                                                 class="w-full shadow-sm sm:text-sm border-gray-300 rounded-md"
                                                 placeholder="Option value"
                                             />
-                                            <button @click="btnClick(`Reorder option ${index}`)">
-                                                <font-awesome-icon :icon="['fas', 'sort']" />
-                                            </button>
-                                            <button @click="btnClick(`Delete option ${index}`)">
+                                            <button @click="removeOption(field, index)">
                                                 <font-awesome-icon :icon="['far', 'trash-can']" />
                                             </button>
                                         </div>
@@ -171,3 +209,25 @@ watch(() => props.template, () => {
         </div>
     </AppLayout>
 </template>
+
+<style scoped>
+.option-row {
+    transition: transform 0.2s ease;
+    position: relative;
+    cursor: default;
+}
+
+.option-row.dragging {
+    opacity: 0.5;
+    background: #f0f0f0;
+    border-radius: 0.375rem;
+}
+
+.option-row.shift-up {
+    transform: translateY(-42px);
+}
+
+.option-row.shift-down {
+    transform: translateY(42px);
+}
+</style>

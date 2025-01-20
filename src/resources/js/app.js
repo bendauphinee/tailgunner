@@ -13,8 +13,8 @@ import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 import { faTrashCan, faClone } from '@fortawesome/free-regular-svg-icons'
 library.add(faTrashCan, faClone)
 
-import { faSort, faPlus, faEye } from '@fortawesome/free-solid-svg-icons'
-library.add(faSort, faPlus, faEye)
+import { faSort, faPlus, faEye, faGripVertical } from '@fortawesome/free-solid-svg-icons'
+library.add(faSort, faPlus, faEye, faGripVertical)
 
 const appName = import.meta.env.VITE_APP_NAME || 'Laravel';
 
