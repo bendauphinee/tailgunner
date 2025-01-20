@@ -54,6 +54,7 @@ watch(() => props.template, () => {
 }, { deep: true });
 
 const currentDragIndex = ref(null);
+const currentFieldDragIndex = ref(null);
 
 const handleDragStart = (index, field, event) => {
     currentDragIndex.value = index;
@@ -78,6 +79,30 @@ const handleDragOver = (index, field, event) => {
 
 const handleDragEnd = () => {
     currentDragIndex.value = null;
+};
+
+const handleFieldDragStart = (index, event) => {
+    currentFieldDragIndex.value = index;
+    event.dataTransfer.effectAllowed = 'move';
+};
+
+const handleFieldDragOver = (index, event) => {
+    event.preventDefault();
+    if (index !== currentFieldDragIndex.value) {
+        const fields = props.template.fields;
+        const draggedField = fields[currentFieldDragIndex.value];
+        const remainingFields = fields.filter((_, i) => i !== currentFieldDragIndex.value);
+        props.template.fields = [
+            ...remainingFields.slice(0, index),
+            draggedField,
+            ...remainingFields.slice(index)
+        ];
+        currentFieldDragIndex.value = index;
+    }
+};
+
+const handleFieldDragEnd = () => {
+    currentFieldDragIndex.value = null;
 };
 
 </script>
@@ -110,6 +135,7 @@ const handleDragEnd = () => {
                     <table class="style01">
                         <thead>
                             <tr>
+                                <th></th>
                                 <th>Field Label</th>
                                 <th>Field Name</th>
                                 <th>Data Type</th>
@@ -118,9 +144,18 @@ const handleDragEnd = () => {
                         </thead>
                         <tbody>
                             <tr v-if="!props.template.fields.length" class="text-gray-500 text-center py-8">
-                                <td colspan="4">No fields found.</td>
+                                <td colspan="5">No fields found.</td>
                             </tr>
-                            <tr v-for="field in props.template.fields" :key="field.id">
+                            <tr v-for="(field, index) in props.template.fields"
+                                :key="field.id"
+                                draggable="true"
+                                :class="{ 'dragging': currentFieldDragIndex === index }"
+                                @dragstart="handleFieldDragStart(index, $event)"
+                                @dragover.prevent="handleFieldDragOver(index, $event)"
+                                @dragend="handleFieldDragEnd">
+                                <td>
+                                    <font-awesome-icon :icon="['fas', 'grip-vertical']" class="cursor-move" />
+                                </td>
                                 <td>
                                     <input
                                         type="text"
@@ -145,9 +180,9 @@ const handleDragEnd = () => {
                                         </option>
                                     </select>
                                     <div v-if="field.type === 'dropdown'" class="mt-2">
-                                        <div v-for="(option, index) in field.extended_options || []"
+                                        <div v-for="(, index) in field.extended_options || []"
                                              :key="index"
-                                             class="option-row flex items-center gap-2 mb-2"
+                                             class="option-row flex items-center gap-2 mb-2 px-2"
                                              :class="{ 'dragging': currentDragIndex === index }"
                                              draggable="true"
                                              @dragstart="handleDragStart(index, field, $event)"
@@ -174,16 +209,13 @@ const handleDragEnd = () => {
                                     </div>
                                 </td>
                                 <td>
-                                    <button @click="btnClick(`Reorder field ${field.id}`)">
-                                        <font-awesome-icon :icon="['fas', 'sort']" />
-                                    </button>
                                     <button @click="btnClick(`Delete field ${field.id}`)">
                                         <font-awesome-icon :icon="['far', 'trash-can']" />
                                     </button>
                                 </td>
                             </tr>
                             <tr class="text-gray-500 py-8">
-                                <td colspan="4">
+                                <td colspan="5">
                                     <button
                                         class="float-right add_button"
                                         @click="btnClick(`Add Template Field To ${template.id}`)"
@@ -219,7 +251,7 @@ const handleDragEnd = () => {
 
 .option-row.dragging {
     opacity: 0.5;
-    background: #f0f0f0;
+    background: #7dd3fc;
     border-radius: 0.375rem;
 }
 
@@ -229,5 +261,14 @@ const handleDragEnd = () => {
 
 .option-row.shift-down {
     transform: translateY(42px);
+}
+
+tr.dragging {
+    opacity: 0.5;
+    background: #7dd3fc;
+}
+
+tr.dragging td {
+    background: transparent;
 }
 </style>
