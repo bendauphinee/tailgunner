@@ -6,6 +6,15 @@
     display: none;
 }
 
+/* Link */
+a.text_link{
+    @apply text-blue-500;
+}
+
+a.text_link:hover{
+    @apply underline;
+}
+
 /* Template Header Elements */
 .template_header{
     @apply flex justify-between items-center;
@@ -16,27 +25,27 @@
 }
 
 /* Button Styles */
-button{
+button, .button{
     @apply mx-1 px-3 py-1 text-xs text-white rounded bg-slate-400;
 }
 
-button:hover{
+button:hover, .button:hover{
     @apply bg-blue-800;
 }
 
-button.add_button{
+button.add_button, .button.add_button{
     @apply m-1 p-2 rounded text-base text-black bg-sky-400;
 }
 
-button.add_button:hover{
+button.add_button:hover, .button.add_button:hover{
     @apply bg-sky-200;
 }
 
-button.cancel_button{
+button.cancel_button, .button.cancel_button{
     @apply m-1 p-2 rounded text-base text-black bg-gray-200
 }
 
-button.cancel_button:hover{
+button.cancel_button:hover, .button.cancel_button:hover{
     @apply bg-gray-300;
 }
 

@@ -141,23 +141,30 @@ watch(
                         </thead>
                         <tbody>
                             <tr v-for="template in templates" :key="template.id">
-                                <td>{{ template.title }}</td>
+                                <td><a :href="`/templates/${template.id}`" class="text_link">{{ template.title }}</a></td>
                                 <td>{{ template.description }}</td>
                                 <td class="text-nowrap" :title="formatDate(template.created_at)">{{ relDate(template.created_at) }}</td>
                                 <td class="text-nowrap" :title="formatDate(template.last_used)">{{ relDate(template.last_used) }}</td>
                                 <td class="text-nowrap">
                                     {{ template.records }} Entries<br>
                                     <button @click="btnClick(`Add Record To Template ${template.id}`)">
+                                        <font-awesome-icon :icon="['fas', 'plus']" />
                                         Add Record
                                     </button><br>
                                     <button @click="btnClick(`View Records For Template ${template.id}`)">
+                                        <font-awesome-icon :icon="['fas', 'eye']" />
                                         View Records
                                     </button>
                                 </td>
                                 <td>
-                                    <button @click="btnClick(`Edit Template ${template.id}`)">Edit</button>
-                                    <button @click="btnClick(`Delete Template ${template.id}`)">Delete</button>
-                                    <button @click="btnClick(`Clone Template ${template.id}`)">Clone</button>
+                                    <button @click="btnClick(`Delete Template ${template.id}`)">
+                                        <font-awesome-icon :icon="['far', 'trash-can']" />
+                                        Delete
+                                    </button>
+                                    <button @click="btnClick(`Clone Template ${template.id}`)">
+                                        <font-awesome-icon :icon="['far', 'clone']" />
+                                        Clone
+                                    </button>
                                 </td>
                             </tr>
                         </tbody>
