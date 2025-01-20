@@ -69,4 +69,15 @@ class TemplateController extends Controller
             ]
         ]);
     }
+
+    public function show(Template $template)
+    {
+        // Load the template with its fields
+        $template->load('fields');
+
+        // Send back the Inertia template and template data
+        return Inertia::render('Templates/Show', [
+            'template' => $template
+        ]);
+    }
 }
