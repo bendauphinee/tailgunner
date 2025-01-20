@@ -179,7 +179,7 @@ const handleFieldDragEnd = () => {
                                             {{ type }}
                                         </option>
                                     </select>
-                                    <div v-if="field.type === 'dropdown'" class="mt-2">
+                                    <div v-if="field.type === 'dropdown'" class="mt-2 options-container">
                                         <div v-for="(, index) in field.extended_options || []"
                                              :key="index"
                                              class="option-row flex items-center gap-2 mb-2 px-2"
@@ -214,6 +214,8 @@ const handleFieldDragEnd = () => {
                                     </button>
                                 </td>
                             </tr>
+                        </tbody>
+                        <tfoot>
                             <tr class="text-gray-500 py-8">
                                 <td colspan="5">
                                     <button
@@ -222,7 +224,7 @@ const handleFieldDragEnd = () => {
                                     >+ Add Field</button>
                                 </td>
                             </tr>
-                        </tbody>
+                        </tfoot>
                     </table>
                     <hr class="border border-black m-4">
                     <div class="flex justify-end space-x-4">
@@ -249,7 +251,8 @@ const handleFieldDragEnd = () => {
     cursor: default;
 }
 
-.option-row.dragging {
+/* Create an options container to isolate drag styles */
+.options-container .option-row.dragging {
     opacity: 0.5;
     background: #7dd3fc;
     border-radius: 0.375rem;
@@ -263,12 +266,13 @@ const handleFieldDragEnd = () => {
     transform: translateY(42px);
 }
 
-tr.dragging {
+/* Explicitly target only direct tr.dragging */
+> table > tbody > tr.dragging {
     opacity: 0.5;
     background: #7dd3fc;
 }
 
-tr.dragging td {
+> table > tbody > tr.dragging td {
     background: transparent;
 }
 </style>
