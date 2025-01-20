@@ -17,7 +17,7 @@ a.text_link:hover{
 
 /* Template Header Elements */
 .template_header{
-    @apply flex justify-between items-center;
+    @apply flex justify-between items-start;
 }
 
 .template_header h2{
