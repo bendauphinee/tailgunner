@@ -19,6 +19,10 @@ const removeOption = (field, index) => {
     field.extended_options.splice(index, 1);
 };
 
+const removeTemplateField = (index) => {
+    props.template.fields.splice(index, 1);
+};
+
 // Watch for changes in template fields and parse extended_options if needed
 const parseExtendedOptions = (fields) => {
     fields.forEach(field => {
@@ -105,6 +109,18 @@ const handleFieldDragEnd = () => {
     currentFieldDragIndex.value = null;
 };
 
+const addTemplateField = () => {
+    if (!props.template.fields) {
+        props.template.fields = [];
+    }
+
+    props.template.fields.push({
+        label: '',
+        name: '',
+        type: 'string',
+        extended_options: [],
+    });
+};
 </script>
 
 <template>
@@ -147,7 +163,7 @@ const handleFieldDragEnd = () => {
                                 <td colspan="5">No fields found.</td>
                             </tr>
                             <tr v-for="(field, index) in props.template.fields"
-                                :key="field.id"
+                                :key="index"
                                 draggable="true"
                                 :class="{ 'dragging': currentFieldDragIndex === index }"
                                 @dragstart="handleFieldDragStart(index, $event)"
@@ -209,7 +225,7 @@ const handleFieldDragEnd = () => {
                                     </div>
                                 </td>
                                 <td>
-                                    <button @click="btnClick(`Delete field ${field.id}`)">
+                                    <button @click="removeTemplateField(index)">
                                         <font-awesome-icon :icon="['far', 'trash-can']" />
                                     </button>
                                 </td>
@@ -220,7 +236,7 @@ const handleFieldDragEnd = () => {
                                 <td colspan="5">
                                     <button
                                         class="float-right add_button"
-                                        @click="btnClick(`Add Template Field To ${template.id}`)"
+                                        @click="addTemplateField"
                                     >+ Add Field</button>
                                 </td>
                             </tr>
