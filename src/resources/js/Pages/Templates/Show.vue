@@ -211,6 +211,12 @@ const handleCancel = () => {
         router.visit(route('templates.index'));
     }
 };
+
+const handleFieldNameInput = (field) => {
+    // Replace spaces with underscores
+    field.name = field.name.replace(/\s+/g, '_');
+    validateFieldNames();
+};
 </script>
 
 <template>
@@ -273,7 +279,7 @@ const handleCancel = () => {
                                     <input
                                         type="text"
                                         v-model="field.name"
-                                        @input="validateFieldNames"
+                                        @input="handleFieldNameInput(field)"
                                         :class="{ 'border-red-500': fieldErrors[index] }"
                                         class="w-full shadow-sm sm:text-sm border-gray-300 rounded-md"
                                     />
