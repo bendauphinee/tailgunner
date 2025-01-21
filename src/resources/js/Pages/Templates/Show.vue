@@ -26,10 +26,14 @@ const removeTemplateField = (index) => {
 // Watch for changes in template fields and parse extended_options if needed
 const parseExtendedOptions = (fields) => {
     fields.forEach(field => {
-        if (field.type === 'dropdown' && field.extended_options && typeof field.extended_options === 'string') {
-            try {
-                field.extended_options = JSON.parse(field.extended_options);
-            } catch (e) {
+        if (field.type === 'dropdown') {
+            if (typeof field.extended_options === 'string') {
+                try {
+                    field.extended_options = JSON.parse(field.extended_options);
+                } catch (e) {
+                    field.extended_options = [];
+                }
+            } else if (!Array.isArray(field.extended_options)) {
                 field.extended_options = [];
             }
         }
@@ -128,37 +132,42 @@ const saveTemplate = () => {
         return;
     }
 
-    const cleanTemplate = {
-        ...props.template,
-        title: props.template.title.trim(),
-        description: props.template.description?.trim() || null,
+    // Create a deep copy to avoid modifying the display data
+    const cleanTemplate = JSON.parse(JSON.stringify(props.template));
 
-        fields: props.template.fields.filter(field => {
-            const trimmedLabel = field.label?.trim() || '';
-            const trimmedName = field.name?.trim() || '';
-            const isFieldPopulated = trimmedLabel && trimmedName;
+    cleanTemplate.title = cleanTemplate.title.trim();
+    cleanTemplate.description = cleanTemplate.description?.trim() || null;
 
-            if (isFieldPopulated) {
-                field.label = trimmedLabel;
-                field.name = trimmedName;
+    cleanTemplate.fields = cleanTemplate.fields.filter(field => {
+        const trimmedLabel = field.label?.trim() || '';
+        const trimmedName = field.name?.trim() || '';
+        const isFieldPopulated = trimmedLabel && trimmedName;
 
-                if (field.type === 'dropdown') {
-                    field.extended_options = field.extended_options
+        if (isFieldPopulated) {
+            field.label = trimmedLabel;
+            field.name = trimmedName;
+
+            if (field.type === 'dropdown') {
+                // Clean and stringify the options
+                field.extended_options = JSON.stringify(
+                    field.extended_options
                         .map(opt => opt?.trim())
-                        .filter(opt => opt);
-                }
-
-                return true;
+                        .filter(opt => opt)
+                );
             }
 
-            return false;
-        })
-    };
+            return true;
+        }
+
+        return false;
+    });
 
     router.put(`/templates/${props.template.id}`, cleanTemplate, {
         onSuccess: () => {
+            // Re-parse the extended_options after successful save
+            parseExtendedOptions(props.template.fields);
             btnClick(`Template ${props.template.id} saved successfully`);
-            originalState.value = JSON.stringify(cleanTemplate);
+            originalState.value = JSON.stringify(props.template);
             isModified.value = false;
         },
     });
