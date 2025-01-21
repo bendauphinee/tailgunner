@@ -65,26 +65,6 @@ watch(() => props.template, () => {
 const optionsDraggable = useDraggable('options');
 const fieldsDraggable = useDraggable('fields');
 
-const handleOptionDragStart = (index, field, event) => {
-    optionsDraggable.handleDragStart(index, event);
-};
-
-const handleOptionDragOver = (index, field, event) => {
-    field.extended_options = optionsDraggable.handleDragOver(index, field.extended_options, event);
-};
-
-const handleFieldDragStart = (index, event) => {
-    fieldsDraggable.handleDragStart(index, event);
-};
-
-const handleFieldDragOver = (index, event) => {
-    props.template.fields = fieldsDraggable.handleDragOver(index, props.template.fields, event);
-};
-
-const handleFieldDragEnd = () => {
-    fieldsDraggable.handleDragEnd();
-};
-
 const addTemplateField = () => {
     if (!props.template.fields) {
         props.template.fields = [];
@@ -235,8 +215,8 @@ const handleFieldNameInput = (field) => {
                                 :class="{ 'dragging': fieldsDraggable.isDragging(index) }">
                                 <td>
                                     <div class="grip-handle" draggable="true"
-                                        @dragstart="handleFieldDragStart(index, $event)"
-                                        @dragover.prevent="handleFieldDragOver(index, $event)"
+                                        @dragstart="fieldsDraggable.handleDragStart(index, $event)"
+                                        @dragover.prevent="(e) => props.template.fields = fieldsDraggable.handleDragOver(index, props.template.fields, e)"
                                         @dragend="fieldsDraggable.handleDragEnd">
                                         <font-awesome-icon :icon="['fas', 'grip-vertical']" class="cursor-move" />
                                     </div>
@@ -275,8 +255,8 @@ const handleFieldNameInput = (field) => {
                                              class="option-row flex items-center gap-2 mb-2 px-2"
                                              :class="{ 'dragging': optionsDraggable.isDragging(index) }">
                                             <div class="grip-handle" draggable="true"
-                                                @dragstart="handleOptionDragStart(index, field, $event)"
-                                                @dragover.prevent="handleOptionDragOver(index, field, $event)"
+                                                @dragstart="optionsDraggable.handleDragStart(index, $event)"
+                                                @dragover.prevent="(e) => field.extended_options = optionsDraggable.handleDragOver(index, field.extended_options, e)"
                                                 @dragend="optionsDraggable.handleDragEnd">
                                                 <font-awesome-icon :icon="['fas', 'grip-vertical']" class="cursor-move" />
                                             </div>
