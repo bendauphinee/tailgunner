@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Template;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
+use Illuminate\Validation\ValidationException;
 
 class TemplateController extends Controller
 {
@@ -80,6 +81,107 @@ class TemplateController extends Controller
         // Send back the Inertia template and template data
         return Inertia::render('Templates/Show', [
             'template' => $template
+        ]);
+    }
+
+    private function fieldsAreDifferent($existing, $new): bool
+    {
+        return $existing->label !== $new['label']
+            || $existing->name !== $new['name']
+            || $existing->type !== $new['type']
+            || $existing->order !== $new['order']
+            || json_encode($existing->extended_options) !== json_encode($new['extended_options']);
+    }
+
+    public function update(Request $request, Template $template)
+    {
+        // Make sure we own the template
+        if ($template->user_id !== auth()->id()) {
+            abort(403);
+        }
+
+        // Validate the form data
+        $validated = $request->validate([
+            'title' => 'required|string|max:120',
+            'description' => 'nullable|string',
+            'fields.*.id' => 'nullable|integer|exists:template_fields,id',
+            'fields.*.label' => ['required', 'string', 'max:80', 'filled', 'regex:/\S/'],
+            'fields.*.name' => ['required', 'string', 'max:80', 'filled', 'regex:/\S/'],
+            'fields.*.type' => ['required', 'string', 'in:integer,string,text,dropdown'],
+            'fields.*.extended_options' => 'nullable',
+            'fields.*.extended_options.*' => 'nullable|string'
+        ]);
+
+        // Trim strings before saving
+        $validated['title'] = trim($validated['title']);
+        $validated['description'] = $validated['description'] ? trim($validated['description']) : null;
+
+        // Do some cleanup on the template fields
+        foreach ($validated['fields'] as $k => $field) {
+            $validated['fields'][$k]['label'] = trim($field['label']);
+            $validated['fields'][$k]['name'] = trim($field['name']);
+
+            // Run through the options and trim them
+            if (is_array($validated['fields'][$k]['extended_options'])) {
+                $validated['fields'][$k]['extended_options'] = array_map(
+                    'trim',
+                    array_filter($validated['fields'][$k]['extended_options'], 'strlen')
+                );
+            }
+
+            // If what we're left with is an empty array, set it to null
+            if (empty($validated['fields'][$k]['extended_options'])) {
+                $validated['fields'][$k]['extended_options'] = null;
+            }
+        }
+
+        // Only update template if data has changed
+        if ($template->title !== $validated['title'] || $template->description !== $validated['description']) {
+            $template->update([
+                'title' => $validated['title'],
+                'description' => $validated['description'],
+            ]);
+        }
+
+        // Get existing fields with their current data
+        $existingFields = $template->fields()->get();
+        $updatedFieldIds = [];
+
+        // Update or create fields
+        foreach ($validated['fields'] as $index => $field) {
+            $fieldData = [
+                'label' => $field['label'],
+                'name' => $field['name'],
+                'type' => $field['type'],
+                'order' => $index + 1,
+                'extended_options' => is_array($field['extended_options'])
+                    ? json_encode($field['extended_options'])
+                    : $field['extended_options']
+            ];
+
+            $existingField = $existingFields->find($field['id'] ?? null);
+
+            if ($existingField) {
+                // Only update if the field data has changed
+                if ($this->fieldsAreDifferent($existingField, $fieldData)) {
+                    $existingField->update($fieldData);
+                }
+
+                $updatedFieldIds[] = $existingField->id;
+            } else {
+                // Create new field
+                $newField = $template->fields()->create($fieldData);
+                $updatedFieldIds[] = $newField->id;
+            }
+        }
+
+        // Delete fields that weren't updated or created
+        $template->fields()
+            ->whereNotIn('id', $updatedFieldIds)
+            ->delete();
+
+        return redirect()->back()->with('flash', [
+            'success' => 'Template updated successfully'
         ]);
     }
 }

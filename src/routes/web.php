@@ -17,5 +17,5 @@ Route::middleware([
         return Inertia::render('Dashboard');
     })->name('dashboard');
 
-    Route::resource('/templates', TemplateController::class)->only(['index', 'show', 'store']);
+    Route::resource('/templates', TemplateController::class)->only(['index', 'show', 'store', 'update']);
 });
