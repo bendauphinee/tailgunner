@@ -121,6 +121,24 @@ const addTemplateField = () => {
         extended_options: [],
     });
 };
+
+const logTemplate = () => {
+    const cleanTemplate = {
+        ...props.template,
+        fields: props.template.fields.filter(field => {
+            const isFieldPopulated = field.label || field.name;
+            if (isFieldPopulated) {
+                // Clean up extended_options if it's a dropdown
+                if (field.type === 'dropdown') {
+                    field.extended_options = field.extended_options.filter(opt => opt);
+                }
+                return true;
+            }
+            return false;
+        })
+    };
+    console.log('Template to save:', JSON.stringify(cleanTemplate));
+};
 </script>
 
 <template>
@@ -251,7 +269,7 @@ const addTemplateField = () => {
                         <button
                             class="add_button"
                             type="submit"
-                            @click="isModified ? btnClick(`Save template ${template.id}`) : btnClick(`No changes to template`)"
+                            @click="isModified ? (btnClick(`Save template ${template.id}`), logTemplate()) : btnClick(`No changes to template`)"
                         >Save Template Changes</button>
                     </div>
                 </div>

@@ -70,10 +70,12 @@ class TemplateController extends Controller
         ]);
     }
 
-    public function show(Template $template)
+    public function show(Request $request)
     {
-        // Load the template with its fields
-        $template->load('fields');
+        // Get the template data, and include the fields
+        $template = Template::select('id', 'title', 'description')
+            ->with('fields:id,template_id,label,name,type,order,extended_options')
+            ->find($request->template);
 
         // Send back the Inertia template and template data
         return Inertia::render('Templates/Show', [
