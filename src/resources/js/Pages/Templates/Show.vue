@@ -1,6 +1,7 @@
 <script setup>
 import { defineProps, onMounted, ref, watch } from 'vue';
 import { Link, router } from '@inertiajs/vue3';
+
 import AppLayout from '@/Layouts/AppLayout.vue';
 import { useDraggable } from '@/Composables/useDraggable';
 
@@ -11,9 +12,6 @@ const props = defineProps({
 const isModified = ref(false);
 const originalState = ref(null);
 const isSaving = ref(false);
-
-// Generic button click message function
-const btnClick = (message) => {window.alert(message)}
 
 const fieldTypes = ['integer', 'string', 'text', 'dropdown'];
 
@@ -110,12 +108,12 @@ const hasDuplicateFieldNames = () => {
 
 const saveTemplate = () => {
     if (!isModified.value) {
-        btnClick('No changes to template');
+        window.alert('No changes to template');
         return;
     }
 
     if (hasDuplicateFieldNames()) {
-        btnClick('Cannot save template: Duplicate field names found');
+        window.alert('Cannot save template: Duplicate field names found');
         return;
     }
 
@@ -155,7 +153,7 @@ const saveTemplate = () => {
         onSuccess: () => {
             // Re-parse the extended_options after successful save
             parseExtendedOptions(props.template.fields);
-            btnClick(`Template ${props.template.id} saved successfully`);
+            window.alert(`Template ${props.template.id} saved successfully`);
 
             // Update the original state and reset the modification status
             originalState.value = JSON.stringify(props.template);
