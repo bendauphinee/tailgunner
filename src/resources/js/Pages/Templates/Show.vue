@@ -1,6 +1,6 @@
 <script setup>
 import { defineProps, onMounted, ref, watch } from 'vue';
-import { Link } from '@inertiajs/vue3';
+import { Link, router } from '@inertiajs/vue3';
 import AppLayout from '@/Layouts/AppLayout.vue';
 
 const props = defineProps({
@@ -122,22 +122,52 @@ const addTemplateField = () => {
     });
 };
 
-const logTemplate = () => {
+const saveTemplate = () => {
+    if (!isModified.value) {
+        btnClick('No changes to template');
+        return;
+    }
+
     const cleanTemplate = {
         ...props.template,
+        title: props.template.title.trim(),
+        description: props.template.description?.trim() || null,
+
         fields: props.template.fields.filter(field => {
-            const isFieldPopulated = field.label || field.name;
+            const trimmedLabel = field.label?.trim() || '';
+            const trimmedName = field.name?.trim() || '';
+            const isFieldPopulated = trimmedLabel && trimmedName;
+
             if (isFieldPopulated) {
-                // Clean up extended_options if it's a dropdown
+                field.label = trimmedLabel;
+                field.name = trimmedName;
+
                 if (field.type === 'dropdown') {
-                    field.extended_options = field.extended_options.filter(opt => opt);
+                    field.extended_options = field.extended_options
+                        .map(opt => opt?.trim())
+                        .filter(opt => opt);
                 }
+
                 return true;
             }
+
             return false;
         })
     };
-    console.log('Template to save:', JSON.stringify(cleanTemplate));
+
+    router.put(`/templates/${props.template.id}`, cleanTemplate, {
+        onSuccess: () => {
+            btnClick(`Template ${props.template.id} saved successfully`);
+            originalState.value = JSON.stringify(cleanTemplate);
+            isModified.value = false;
+        },
+    });
+};
+
+const handleCancel = () => {
+    if (!isModified.value || (isModified.value && confirm('You have unsaved changes. Are you sure you want to leave?'))) {
+        router.visit(route('templates.index'));
+    }
 };
 </script>
 
@@ -264,12 +294,12 @@ const logTemplate = () => {
                     <div class="flex justify-end space-x-4">
                         <button
                             class="cancel_button"
-                            @click="btnClick(`Cancel changes to template ${template.id}`)"
+                            @click="handleCancel"
                         >Cancel Changes / Return To List</button>
                         <button
                             class="add_button"
                             type="submit"
-                            @click="isModified ? (btnClick(`Save template ${template.id}`), logTemplate()) : btnClick(`No changes to template`)"
+                            @click="saveTemplate"
                         >Save Template Changes</button>
                     </div>
                 </div>
