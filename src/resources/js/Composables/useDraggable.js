@@ -1,4 +1,5 @@
 import { ref } from 'vue';
+import './useDraggable.css';
 
 export function useDraggable(listId) {
     const currentDragIndex = ref(null);
@@ -36,10 +37,17 @@ export function useDraggable(listId) {
         return dragTarget.value === listId && currentDragIndex.value === index;
     };
 
+    const dragClasses = {
+        handle: 'grip-handle',
+        draggingItem: 'draggable-item dragging',
+        draggingRow: 'draggable-row dragging'
+    };
+
     return {
         isDragging,
         handleDragStart,
         handleDragOver,
-        handleDragEnd
+        handleDragEnd,
+        dragClasses
     };
 }

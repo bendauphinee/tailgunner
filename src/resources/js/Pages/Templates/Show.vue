@@ -64,6 +64,7 @@ watch(() => props.template, () => {
 
 const optionsDraggable = useDraggable('options');
 const fieldsDraggable = useDraggable('fields');
+const { dragClasses } = optionsDraggable;
 
 const addTemplateField = () => {
     if (!props.template.fields) {
@@ -212,13 +213,13 @@ const handleFieldNameInput = (field) => {
                             </tr>
                             <tr v-for="(field, index) in props.template.fields"
                                 :key="index"
-                                :class="{ 'dragging': fieldsDraggable.isDragging(index) }">
+                                :class="{ [dragClasses.draggingRow]: fieldsDraggable.isDragging(index) }">
                                 <td>
-                                    <div class="grip-handle" draggable="true"
+                                    <div :class="dragClasses.handle" draggable="true"
                                         @dragstart="fieldsDraggable.handleDragStart(index, $event)"
                                         @dragover.prevent="(e) => props.template.fields = fieldsDraggable.handleDragOver(index, props.template.fields, e)"
                                         @dragend="fieldsDraggable.handleDragEnd">
-                                        <font-awesome-icon :icon="['fas', 'grip-vertical']" class="cursor-move" />
+                                        <font-awesome-icon :icon="['fas', 'grip-vertical']" />
                                     </div>
                                 </td>
                                 <td>
@@ -253,8 +254,8 @@ const handleFieldNameInput = (field) => {
                                         <div v-for="(option, index) in field.extended_options || []"
                                              :key="index"
                                              class="option-row flex items-center gap-2 mb-2 px-2"
-                                             :class="{ 'dragging': optionsDraggable.isDragging(index) }">
-                                            <div class="grip-handle" draggable="true"
+                                             :class="{ [dragClasses.draggingItem]: optionsDraggable.isDragging(index) }">
+                                            <div :class="dragClasses.handle" draggable="true"
                                                 @dragstart="optionsDraggable.handleDragStart(index, $event)"
                                                 @dragover.prevent="(e) => field.extended_options = optionsDraggable.handleDragOver(index, field.extended_options, e)"
                                                 @dragend="optionsDraggable.handleDragEnd">
@@ -319,35 +320,5 @@ const handleFieldNameInput = (field) => {
     transition: transform 0.2s ease;
     position: relative;
     cursor: default;
-}
-
-.options-container .option-row.dragging {
-    opacity: 0.5;
-    background: #7dd3fc;
-    border-radius: 0.375rem;
-}
-
-.border-red-500 {
-    border-color: rgb(239 68 68);
-}
-
-.grip-handle {
-    display: inline-block;
-    padding: 4px;
-    cursor: move;
-}
-
-.grip-handle:hover {
-    background-color: rgba(0, 0, 0, 0.05);
-    border-radius: 4px;
-}
-
-tbody > tr.dragging {
-    opacity: 0.5;
-    background-color: #7dd3fc !important;
-}
-
-tbody > tr.dragging > td {
-    background-color: transparent !important;
 }
 </style>
