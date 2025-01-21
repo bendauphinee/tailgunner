@@ -65,6 +65,8 @@ const currentDragIndex = ref(null);
 const currentFieldDragIndex = ref(null);
 
 const handleDragStart = (index, field, event) => {
+    // Ensure we're dragging from the grip icon
+    if (!event.target.closest('.grip-handle')) return;
     currentDragIndex.value = index;
     event.dataTransfer.effectAllowed = 'move';
 };
@@ -90,6 +92,8 @@ const handleDragEnd = () => {
 };
 
 const handleFieldDragStart = (index, event) => {
+    // Ensure we're dragging from the grip icon
+    if (!event.target.closest('.grip-handle')) return;
     currentFieldDragIndex.value = index;
     event.dataTransfer.effectAllowed = 'move';
 };
@@ -260,13 +264,14 @@ const handleFieldNameInput = (field) => {
                             </tr>
                             <tr v-for="(field, index) in props.template.fields"
                                 :key="index"
-                                draggable="true"
-                                :class="{ 'dragging': currentFieldDragIndex === index }"
-                                @dragstart="handleFieldDragStart(index, $event)"
-                                @dragover.prevent="handleFieldDragOver(index, $event)"
-                                @dragend="handleFieldDragEnd">
+                                :class="{ 'dragging': currentFieldDragIndex === index }">
                                 <td>
-                                    <font-awesome-icon :icon="['fas', 'grip-vertical']" class="cursor-move" />
+                                    <div class="grip-handle" draggable="true"
+                                        @dragstart="handleFieldDragStart(index, $event)"
+                                        @dragover.prevent="handleFieldDragOver(index, $event)"
+                                        @dragend="handleFieldDragEnd">
+                                        <font-awesome-icon :icon="['fas', 'grip-vertical']" class="cursor-move" />
+                                    </div>
                                 </td>
                                 <td>
                                     <input
@@ -297,16 +302,16 @@ const handleFieldNameInput = (field) => {
                                         </option>
                                     </select>
                                     <div v-if="field.type === 'dropdown'" class="mt-2 options-container">
-                                        <div v-for="(, index) in field.extended_options || []"
+                                        <div v-for="(option, index) in field.extended_options || []"
                                              :key="index"
                                              class="option-row flex items-center gap-2 mb-2 px-2"
-                                             :class="{ 'dragging': currentDragIndex === index }"
-                                             draggable="true"
-                                             @dragstart="handleDragStart(index, field, $event)"
-                                             @dragover.prevent="handleDragOver(index, field, $event)"
-                                             @dragend="handleDragEnd"
-                                            >
-                                            <font-awesome-icon :icon="['fas', 'grip-vertical']" class="cursor-move" />
+                                             :class="{ 'dragging': currentDragIndex === index }">
+                                            <div class="grip-handle" draggable="true"
+                                                @dragstart="handleDragStart(index, field, $event)"
+                                                @dragover.prevent="handleDragOver(index, field, $event)"
+                                                @dragend="handleDragEnd">
+                                                <font-awesome-icon :icon="['fas', 'grip-vertical']" class="cursor-move" />
+                                            </div>
                                             <input
                                                 type="text"
                                                 v-model="field.extended_options[index]"
@@ -368,32 +373,33 @@ const handleFieldNameInput = (field) => {
     cursor: default;
 }
 
-/* Create an options container to isolate drag styles */
 .options-container .option-row.dragging {
     opacity: 0.5;
     background: #7dd3fc;
     border-radius: 0.375rem;
 }
 
-.option-row.shift-up {
-    transform: translateY(-42px);
-}
-
-.option-row.shift-down {
-    transform: translateY(42px);
-}
-
-/* Explicitly target only direct tr.dragging */
-> table > tbody > tr.dragging {
-    opacity: 0.5;
-    background: #7dd3fc;
-}
-
-> table > tbody > tr.dragging td {
-    background: transparent;
-}
-
 .border-red-500 {
     border-color: rgb(239 68 68);
+}
+
+.grip-handle {
+    display: inline-block;
+    padding: 4px;
+    cursor: move;
+}
+
+.grip-handle:hover {
+    background-color: rgba(0, 0, 0, 0.05);
+    border-radius: 4px;
+}
+
+tbody > tr.dragging {
+    opacity: 0.5;
+    background-color: #7dd3fc !important;
+}
+
+tbody > tr.dragging > td {
+    background-color: transparent !important;
 }
 </style>
