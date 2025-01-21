@@ -126,9 +126,42 @@ const addTemplateField = () => {
     });
 };
 
+const fieldErrors = ref([]);
+
+const validateFieldNames = () => {
+    const names = props.template.fields.map(f => f.name?.trim().toLowerCase());
+    const duplicates = names.filter((name, index) => names.indexOf(name) !== index);
+
+    fieldErrors.value = Array(props.template.fields.length).fill(null);
+
+    if (duplicates.length > 0) {
+        props.template.fields.forEach((field, index) => {
+            if (duplicates.includes(field.name?.trim().toLowerCase())) {
+                fieldErrors.value[index] = 'Duplicate field name';
+            }
+        });
+        return true;
+    }
+    return false;
+};
+
+// Add watch for field names
+watch(() => props.template.fields, () => {
+    validateFieldNames();
+}, { deep: true });
+
+const hasDuplicateFieldNames = () => {
+    return validateFieldNames();
+};
+
 const saveTemplate = () => {
     if (!isModified.value) {
         btnClick('No changes to template');
+        return;
+    }
+
+    if (hasDuplicateFieldNames()) {
+        btnClick('Cannot save template: Duplicate field names found');
         return;
     }
 
@@ -240,8 +273,13 @@ const handleCancel = () => {
                                     <input
                                         type="text"
                                         v-model="field.name"
+                                        @input="validateFieldNames"
+                                        :class="{ 'border-red-500': fieldErrors[index] }"
                                         class="w-full shadow-sm sm:text-sm border-gray-300 rounded-md"
                                     />
+                                    <div v-if="fieldErrors[index]" class="text-red-500 text-sm mt-1">
+                                        {{ fieldErrors[index] }}
+                                    </div>
                                 </td>
                                 <td>
                                     <select
@@ -347,5 +385,9 @@ const handleCancel = () => {
 
 > table > tbody > tr.dragging td {
     background: transparent;
+}
+
+.border-red-500 {
+    border-color: rgb(239 68 68);
 }
 </style>
