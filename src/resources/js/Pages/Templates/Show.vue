@@ -1,6 +1,7 @@
 <script setup>
 import { defineProps, onMounted, ref, watch } from 'vue';
 import { Link, router } from '@inertiajs/vue3';
+import { debounce } from 'lodash';
 
 import AppLayout from '@/Layouts/AppLayout.vue';
 import { useDraggable } from '@/Composables/useDraggable';
@@ -97,9 +98,11 @@ const validateFieldNames = () => {
     return false;
 };
 
-// Add watch for field names
+const debouncedValidateFieldNames = debounce(validateFieldNames, 100);
+
+// Watch for field name changes
 watch(() => props.template.fields, () => {
-    validateFieldNames();
+    debouncedValidateFieldNames();
 }, { deep: true });
 
 const hasDuplicateFieldNames = () => {
@@ -178,7 +181,7 @@ const handleCancel = () => {
 const handleFieldNameInput = (field) => {
     // Replace spaces with underscores
     field.name = field.name.replace(/\s+/g, '_');
-    validateFieldNames();
+    debouncedValidateFieldNames();
 };
 </script>
 
