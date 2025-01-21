@@ -10,6 +10,7 @@ const props = defineProps({
 
 const isModified = ref(false);
 const originalState = ref(null);
+const isSaving = ref(false);
 
 // Generic button click message function
 const btnClick = (message) => {window.alert(message)}
@@ -118,6 +119,8 @@ const saveTemplate = () => {
         return;
     }
 
+    isSaving.value = true;
+
     // Create a deep copy to avoid modifying the display data
     const cleanTemplate = JSON.parse(JSON.stringify(props.template));
 
@@ -153,9 +156,18 @@ const saveTemplate = () => {
             // Re-parse the extended_options after successful save
             parseExtendedOptions(props.template.fields);
             btnClick(`Template ${props.template.id} saved successfully`);
+
+            // Update the original state and reset the modification status
             originalState.value = JSON.stringify(props.template);
             isModified.value = false;
+
+            // Clear loading state
+            isSaving.value = false;
         },
+        onError: () => {
+            // Clear loading state on error
+            isSaving.value = false;
+        }
     });
 };
 
@@ -307,7 +319,10 @@ const handleFieldNameInput = (field) => {
                             class="add_button"
                             type="submit"
                             @click="saveTemplate"
-                        >Save Template Changes</button>
+                            :disabled="isSaving"
+                        >
+                            {{ isSaving ? 'Saving...' : 'Save Template Changes' }}
+                        </button>
                     </div>
                 </div>
             </div>
