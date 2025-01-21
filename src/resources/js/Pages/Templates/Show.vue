@@ -192,11 +192,20 @@ const handleFieldNameInput = (field) => {
     <AppLayout :title="template.title">
         <template #header>
             <div class="template_header">
-                <h2>
-                    <Link :href="route('templates.index')" class="text_link">Template</Link>: {{ template.title }}
-                </h2>
-                <p v-if="template.description" class="max-w-[70%]">{{ template.description }}</p>
-                <p v-else class="max-w-[70%]">No description available.</p>
+                <div class="w-full flex justify-between items-center">
+                    <h2><Link :href="route('templates.index')" class="text_link">Template</Link>: {{ template.title }}</h2>
+                    <div>
+                        {{ template.records }} Entries
+                        <button @click="btnClick(`Add Record To Template ${template.id}`)">
+                            <font-awesome-icon :icon="['fas', 'plus']" />
+                            Add Record
+                        </button>
+                        <button @click="btnClick(`View Records For Template ${template.id}`)">
+                            <font-awesome-icon :icon="['fas', 'eye']" />
+                            View Records
+                        </button>
+                    </div>
+                </div>
             </div>
         </template>
 

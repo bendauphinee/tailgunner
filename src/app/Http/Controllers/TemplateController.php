@@ -78,6 +78,9 @@ class TemplateController extends Controller
             ->with('fields:id,template_id,label,name,type,order,extended_options')
             ->find($request->template);
 
+        // Add a fake count of records
+        $template->records = rand(20, 100);
+
         // Send back the Inertia template and template data
         return Inertia::render('Templates/Show', [
             'template' => $template
@@ -111,6 +114,10 @@ class TemplateController extends Controller
             'fields.*.extended_options' => 'nullable',
             'fields.*.extended_options.*' => 'nullable|string'
         ]);
+
+        // TODO: Add validation for duplicate field names
+        // TODO: Add space replacement for field names
+        // TODO: Add validation return to the front end
 
         // Trim strings before saving
         $validated['title'] = trim($validated['title']);
