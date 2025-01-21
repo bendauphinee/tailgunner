@@ -2,6 +2,7 @@
 import { defineProps, onMounted, ref, watch } from 'vue';
 import { Link, router } from '@inertiajs/vue3';
 import { debounce } from 'lodash';
+import { useFlashMessage } from '@/Composables/useFlashMessage';
 
 import AppLayout from '@/Layouts/AppLayout.vue';
 import { useDraggable } from '@/Composables/useDraggable';
@@ -109,14 +110,16 @@ const hasDuplicateFieldNames = () => {
     return validateFieldNames();
 };
 
+const { flashMessage } = useFlashMessage();
+
 const saveTemplate = () => {
     if (!isModified.value) {
-        window.alert('No changes to template');
+        flashMessage.warning('No changes to template');
         return;
     }
 
     if (hasDuplicateFieldNames()) {
-        window.alert('Cannot save template: Duplicate field names found');
+        flashMessage.error('Cannot save template: Duplicate field names found');
         return;
     }
 
@@ -156,7 +159,7 @@ const saveTemplate = () => {
         onSuccess: () => {
             // Re-parse the extended_options after successful save
             parseExtendedOptions(props.template.fields);
-            window.alert(`Template ${props.template.id} saved successfully`);
+            flashMessage.success('Template changes saved successfully');
 
             // Update the original state and reset the modification status
             originalState.value = JSON.stringify(props.template);
@@ -166,7 +169,7 @@ const saveTemplate = () => {
             isSaving.value = false;
         },
         onError: () => {
-            // Clear loading state on error
+            flashMessage.error('Failed to save template changes');
             isSaving.value = false;
         }
     });
@@ -317,12 +320,23 @@ const handleFieldNameInput = (field) => {
                             @click="handleCancel"
                         >Cancel Changes / Return To List</button>
                         <button
-                            class="add_button"
+                            class="save_button"
                             type="submit"
                             @click="saveTemplate"
-                            :disabled="isSaving"
+                            :disabled="!isModified || isSaving"
                         >
-                            {{ isSaving ? 'Saving...' : 'Save Template Changes' }}
+                            <span v-if="!isModified">
+                                <font-awesome-icon :icon="['fas', 'circle-check']" class="text-green-400" />
+                                No Changes To Save
+                            </span>
+                            <span v-else-if="isSaving">
+                                <font-awesome-icon :icon="['fas', 'spinner']" class="animate-spin" />
+                                Saving...
+                            </span>
+                            <span v-else>
+                                <font-awesome-icon :icon="['fas', 'triangle-exclamation']" class="text-yellow-400" />
+                                Save Template Changes
+                            </span>
                         </button>
                     </div>
                 </div>

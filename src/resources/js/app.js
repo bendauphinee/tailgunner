@@ -13,8 +13,10 @@ import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 import { faTrashCan, faClone } from '@fortawesome/free-regular-svg-icons'
 library.add(faTrashCan, faClone)
 
-import { faSort, faPlus, faEye, faGripVertical } from '@fortawesome/free-solid-svg-icons'
-library.add(faSort, faPlus, faEye, faGripVertical)
+import { faSort, faPlus, faEye, faGripVertical, faTimes, faTriangleExclamation, faCircleCheck, faSpinner } from '@fortawesome/free-solid-svg-icons'
+library.add(faSort, faPlus, faEye, faGripVertical, faTimes, faTriangleExclamation, faCircleCheck, faSpinner)
+
+import FlashMessage from '@/Components/FlashMessage.vue';
 
 const appName = import.meta.env.VITE_APP_NAME || 'Laravel';
 
@@ -26,6 +28,7 @@ createInertiaApp({
             .use(plugin)
             .use(ZiggyVue)
             .component('font-awesome-icon', FontAwesomeIcon)
+            .component('FlashMessage', FlashMessage)
             .mount(el);
     },
     progress: {
