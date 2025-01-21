@@ -2,6 +2,7 @@
 import { defineProps, onMounted, ref, watch } from 'vue';
 import { Link, router } from '@inertiajs/vue3';
 import AppLayout from '@/Layouts/AppLayout.vue';
+import { useDraggable } from '@/Composables/useDraggable';
 
 const props = defineProps({
     template: Object
@@ -61,60 +62,27 @@ watch(() => props.template, () => {
     }
 }, { deep: true });
 
-const currentDragIndex = ref(null);
-const currentFieldDragIndex = ref(null);
+const optionsDraggable = useDraggable('options');
+const fieldsDraggable = useDraggable('fields');
 
-const handleDragStart = (index, field, event) => {
-    // Ensure we're dragging from the grip icon
-    if (!event.target.closest('.grip-handle')) return;
-    currentDragIndex.value = index;
-    event.dataTransfer.effectAllowed = 'move';
+const handleOptionDragStart = (index, field, event) => {
+    optionsDraggable.handleDragStart(index, event);
 };
 
-const handleDragOver = (index, field, event) => {
-    event.preventDefault();
-    if (index !== currentDragIndex.value) {
-        const items = field.extended_options;
-        const draggedItem = items[currentDragIndex.value];
-        const remainingItems = items.filter((_, i) => i !== currentDragIndex.value);
-        const reorderedItems = [
-            ...remainingItems.slice(0, index),
-            draggedItem,
-            ...remainingItems.slice(index)
-        ];
-        field.extended_options = reorderedItems;
-        currentDragIndex.value = index;
-    }
-};
-
-const handleDragEnd = () => {
-    currentDragIndex.value = null;
+const handleOptionDragOver = (index, field, event) => {
+    field.extended_options = optionsDraggable.handleDragOver(index, field.extended_options, event);
 };
 
 const handleFieldDragStart = (index, event) => {
-    // Ensure we're dragging from the grip icon
-    if (!event.target.closest('.grip-handle')) return;
-    currentFieldDragIndex.value = index;
-    event.dataTransfer.effectAllowed = 'move';
+    fieldsDraggable.handleDragStart(index, event);
 };
 
 const handleFieldDragOver = (index, event) => {
-    event.preventDefault();
-    if (index !== currentFieldDragIndex.value) {
-        const fields = props.template.fields;
-        const draggedField = fields[currentFieldDragIndex.value];
-        const remainingFields = fields.filter((_, i) => i !== currentFieldDragIndex.value);
-        props.template.fields = [
-            ...remainingFields.slice(0, index),
-            draggedField,
-            ...remainingFields.slice(index)
-        ];
-        currentFieldDragIndex.value = index;
-    }
+    props.template.fields = fieldsDraggable.handleDragOver(index, props.template.fields, event);
 };
 
 const handleFieldDragEnd = () => {
-    currentFieldDragIndex.value = null;
+    fieldsDraggable.handleDragEnd();
 };
 
 const addTemplateField = () => {
@@ -264,12 +232,12 @@ const handleFieldNameInput = (field) => {
                             </tr>
                             <tr v-for="(field, index) in props.template.fields"
                                 :key="index"
-                                :class="{ 'dragging': currentFieldDragIndex === index }">
+                                :class="{ 'dragging': fieldsDraggable.isDragging(index) }">
                                 <td>
                                     <div class="grip-handle" draggable="true"
                                         @dragstart="handleFieldDragStart(index, $event)"
                                         @dragover.prevent="handleFieldDragOver(index, $event)"
-                                        @dragend="handleFieldDragEnd">
+                                        @dragend="fieldsDraggable.handleDragEnd">
                                         <font-awesome-icon :icon="['fas', 'grip-vertical']" class="cursor-move" />
                                     </div>
                                 </td>
@@ -305,11 +273,11 @@ const handleFieldNameInput = (field) => {
                                         <div v-for="(option, index) in field.extended_options || []"
                                              :key="index"
                                              class="option-row flex items-center gap-2 mb-2 px-2"
-                                             :class="{ 'dragging': currentDragIndex === index }">
+                                             :class="{ 'dragging': optionsDraggable.isDragging(index) }">
                                             <div class="grip-handle" draggable="true"
-                                                @dragstart="handleDragStart(index, field, $event)"
-                                                @dragover.prevent="handleDragOver(index, field, $event)"
-                                                @dragend="handleDragEnd">
+                                                @dragstart="handleOptionDragStart(index, field, $event)"
+                                                @dragover.prevent="handleOptionDragOver(index, field, $event)"
+                                                @dragend="optionsDraggable.handleDragEnd">
                                                 <font-awesome-icon :icon="['fas', 'grip-vertical']" class="cursor-move" />
                                             </div>
                                             <input
