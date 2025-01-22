@@ -106,11 +106,11 @@ class TemplateController extends Controller
         // Validate the form data
         $validated = $request->validate([
             'title' => 'required|string|max:120',
-            'description' => 'nullable|string',
+            'description' => 'nullable|string|max:4000',
             'fields.*.id' => 'nullable|integer|exists:template_fields,id',
             'fields.*.label' => ['required', 'string', 'max:80', 'filled', 'regex:/\S/'],
             'fields.*.name' => ['required', 'string', 'max:80', 'filled', 'regex:/\S/'],
-            'fields.*.type' => ['required', 'string', 'in:integer,string,text,dropdown'],
+            'fields.*.type' => ['required', 'string', 'in:integer,string,text,dropdown,checkbox'],
             'fields.*.extended_options' => 'nullable',
             'fields.*.extended_options.*' => 'nullable|string'
         ]);

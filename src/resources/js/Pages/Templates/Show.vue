@@ -15,7 +15,7 @@ const isModified = ref(false);
 const originalState = ref(null);
 const isSaving = ref(false);
 
-const fieldTypes = ['integer', 'string', 'text', 'dropdown'];
+const fieldTypes = ['integer', 'string', 'text', 'dropdown', 'checkbox'];
 
 const removeOption = (field, index) => {
     field.extended_options.splice(index, 1);
@@ -28,7 +28,7 @@ const removeTemplateField = (index) => {
 // Watch for changes in template fields and parse extended_options if needed
 const parseExtendedOptions = (fields) => {
     fields.forEach(field => {
-        if (field.type === 'dropdown') {
+        if (field.type === 'dropdown' || field.type === 'checkbox') {
             if (typeof field.extended_options === 'string') {
                 try {
                     field.extended_options = JSON.parse(field.extended_options);
@@ -140,7 +140,7 @@ const saveTemplate = () => {
             field.label = trimmedLabel;
             field.name = trimmedName;
 
-            if (field.type === 'dropdown') {
+            if (field.type === 'dropdown' || field.type === 'checkbox') {
                 // Clean and stringify the options
                 field.extended_options = JSON.stringify(
                     field.extended_options
@@ -275,7 +275,7 @@ const handleFieldNameInput = (field) => {
                                             {{ type }}
                                         </option>
                                     </select>
-                                    <div v-if="field.type === 'dropdown'" class="mt-2 options-container">
+                                    <div v-if="field.type === 'dropdown' || field.type === 'checkbox'" class="mt-2 options-container">
                                         <div v-for="(option, index) in field.extended_options || []"
                                              :key="index"
                                              class="option-row flex items-center gap-2 mb-2 px-2"
