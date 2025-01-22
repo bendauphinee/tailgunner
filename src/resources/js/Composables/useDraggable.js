@@ -14,15 +14,19 @@ export function useDraggable(listId) {
 
     const handleDragOver = (index, items, event) => {
         event.preventDefault();
+
         if (index !== currentDragIndex.value && dragTarget.value === listId) {
             const draggedItem = items[currentDragIndex.value];
             const remainingItems = items.filter((_, i) => i !== currentDragIndex.value);
+
             const reorderedItems = [
                 ...remainingItems.slice(0, index),
                 draggedItem,
                 ...remainingItems.slice(index)
             ];
+
             currentDragIndex.value = index;
+
             return reorderedItems;
         }
         return items;
