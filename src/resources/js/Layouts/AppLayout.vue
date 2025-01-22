@@ -287,6 +287,7 @@ const logout = () => {
             <main>
                 <slot />
             </main>
+            <FlashMessage />
         </div>
     </div>
 </template>

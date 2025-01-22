@@ -49,6 +49,14 @@ button.cancel_button:hover, .button.cancel_button:hover{
     @apply bg-gray-300;
 }
 
+button.save_button, .button.save_button{
+    @apply m-1 p-2 rounded text-base text-white bg-slate-600;
+}
+
+button.save_button:hover, .button.save_button:hover{
+    @apply bg-slate-900 text-white;
+}
+
 /* Dialog Styles */
 .dialog-overlay {
     @apply fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50;
@@ -94,4 +102,8 @@ table.style01 tbody tr:hover{
 
 table.style01 tbody td{
     @apply px-4 py-2 text-left text-gray-900 border-b align-text-top;
+}
+
+table.style01 tfoot td{
+    @apply px-4 py-2 text-left text-gray-50 bg-gray-700 border-b-4;
 }
