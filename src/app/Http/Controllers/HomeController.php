@@ -63,6 +63,11 @@ class HomeController extends Controller
                     'url' => 'https://bendauphinee.com/writing/2025/01/17/an-app-from-scratch-part-9-setting-up-our-production-server-and-deployment-us1-c4/',
                     'date' => 'Jan 17, 2025',
                 ],
+                [
+                    'title' => 'Part 10 – Reflections And Template Editing',
+                    'url' => 'https://bendauphinee.com/writing/2025/01/22/an-app-from-scratch-part-10-reflections-and-template-editing/',
+                    'date' => 'Jan 22, 2025',
+                ],
             ],
         ]);
     }
