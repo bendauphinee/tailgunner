@@ -8,6 +8,7 @@ export default defineConfig(({ mode }) => {
 
     return {
         server: {
+            cors: true, // Enables default CORS policy
             host: env.VITE_APP_ADDRESS
         },
         plugins: [

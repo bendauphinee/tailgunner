@@ -7,6 +7,9 @@ import { useFlashMessage } from '@/Composables/useFlashMessage';
 import AppLayout from '@/Layouts/AppLayout.vue';
 import { useDraggable } from '@/Composables/useDraggable';
 
+// Generic button click message function
+const btnClick = (message) => {window.alert(message)}
+
 const props = defineProps({
     template: Object
 });
