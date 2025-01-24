@@ -2,16 +2,18 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
+use App\Models\Template;
+use App\Models\TemplateRecord;
 use Illuminate\Database\Seeder;
 
 class TemplateRecordsSeeder extends Seeder
 {
-    /**
-     * Run the database seeds.
-     */
     public function run(): void
     {
-        //
+        Template::all()->each(function ($template) {
+            TemplateRecord::factory()
+                ->count(5)
+                ->create(['template_id' => $template->id]);
+        });
     }
 }
