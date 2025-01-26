@@ -5,12 +5,12 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class TemplateField extends Model
+class TemplateRecord extends Model
 {
-    /** @use HasFactory<\Database\Factories\TemplateFieldFactory> */
+    /** @use HasFactory<\Database\Factories\TemplateRecordFactory> */
     use HasFactory;
 
-    protected $fillable = ['label', 'name', 'type', 'order', 'extended_options'];
+    protected $fillable = ['template_id'];
 
     public function template()
     {

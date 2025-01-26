@@ -21,4 +21,9 @@ class Template extends Model
     {
         return $this->hasMany(TemplateField::class);
     }
+
+    public function records()
+    {
+        return $this->hasMany(TemplateRecord::class);
+    }
 }
