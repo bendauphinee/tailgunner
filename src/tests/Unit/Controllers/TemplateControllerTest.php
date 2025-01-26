@@ -27,6 +27,9 @@ class TemplateControllerTest extends TestCase
             'user_id' => $this->user->id
         ]);
 
+        // Create templates for another user (shouldn't be returned)
+        Template::factory()->count(2)->create();
+
         $response = $this->actingAs($this->user)
             ->get('/templates');
 

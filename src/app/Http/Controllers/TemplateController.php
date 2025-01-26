@@ -7,6 +7,12 @@ use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Illuminate\Validation\ValidationException;
 
+/**
+ * @todo Add a field to determine what fields we show in a list view of the data.
+ *       This will allow us to show a subset of fields in the list view, and then
+ *       show all fields in the detail view.
+ */
+
 class TemplateController extends Controller
 {
     public function index()
@@ -77,6 +83,10 @@ class TemplateController extends Controller
         $template = Template::select('id', 'title', 'description')
             ->with('fields:id,template_id,label,name,type,order,extended_options')
             ->find($request->template);
+
+        $template = Template::withMetaAndFields($withExtendedFields = true)
+            ->where('user_id', auth()->id())
+            ->findOrFail($request->template);
 
         // Add a fake count of records
         $template->records = rand(20, 100);
