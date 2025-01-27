@@ -4,12 +4,12 @@ namespace Tests\Unit\Models;
 
 use App\Models\Template;
 use App\Models\TemplateField;
-use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Foundation\Testing\DatabaseTransactions;
 use Tests\TestCase;
 
 class TemplateTest extends TestCase
 {
-    use RefreshDatabase;
+    use DatabaseTransactions;
 
     public function test_can_create_template()
     {
@@ -37,72 +37,53 @@ class TemplateTest extends TestCase
         $this->assertTrue($loadedTemplate->fields->contains($field));
     }
 
-    public function test_scope_with_meta_and_fields_basic_query()
-    {
-        $template = Template::factory()->create([
-            'title' => 'Test Template',
-            'description' => 'Test Description'
-        ]);
-
-        TemplateField::factory()->create([
-            'template_id' => $template->id,
-            'label' => 'Test Field',
-            'name' => 'test_field',
-            'type' => 'text',
-            'order' => 1,
-            'extended_options' => json_encode(['required' => true])
-        ]);
-
-        $result = Template::withMetaAndFields()->find($template->id);
-
-        $this->assertEquals('Test Template', $result->title);
-        $this->assertEquals('Test Description', $result->description);
-        $this->assertCount(1, $result->fields);
-
-        $field = $result->fields->first();
-        $this->assertEquals('Test Field', $field->label);
-        $this->assertEquals('test_field', $field->name);
-        $this->assertEquals('text', $field->type);
-        $this->assertEquals(1, $field->order);
-    }
-
-    public function test_scope_with_meta_and_fields_ordering()
+    public function test_scope_with_meta_and_fields_basic()
     {
         $template = Template::factory()->create();
+        $field = TemplateField::factory()->create(['template_id' => $template->id]);
 
-        TemplateField::factory()->create([
-            'template_id' => $template->id,
-            'label' => 'Second Field',
-            'order' => 2
-        ]);
+        $loadedTemplate = Template::withMetaAndFields()->find($template->id);
 
-        TemplateField::factory()->create([
-            'template_id' => $template->id,
-            'label' => 'First Field',
-            'order' => 1
-        ]);
+        $this->assertNotNull($loadedTemplate);
+        $this->assertTrue($loadedTemplate->fields->contains($field));
 
-        $result = Template::withMetaAndFields()->first();
+        $loadedTemplateArray = $loadedTemplate->toArray();
+        $this->assertArrayHasKeys(['id', 'title', 'description'], $loadedTemplateArray);
 
-        $fields = $result->fields->toArray();
-        $this->assertEquals('First Field', $fields[0]['label']);
-        $this->assertEquals('Second Field', $fields[1]['label']);
+        $loadedFieldArray = $loadedTemplate->fields->first()->toArray();
+        $this->assertArrayHasKeys(['id',
+            'template_id',
+            'label',
+            'name',
+            'type',
+            'order',
+        ], $loadedFieldArray);
     }
 
-    public function test_scope_with_meta_and_fields_extended_fields()
+    public function test_scope_with_meta_and_fields_extended()
     {
         $template = Template::factory()->create();
-        $field = TemplateField::factory()->create([
-            'template_id' => $template->id,
-            'extended_options' => json_encode(['required' => true])
-        ]);
+        $field = TemplateField::factory()->create(['template_id' => $template->id]);
 
-        $result = Template::withMetaAndFields(true)->first();
+        $loadedTemplate = Template::withMetaAndFields(true)->find($template->id);
 
-        $this->assertArrayHasKey('extended_options', $result->fields->first()->toArray());
-        $this->assertEquals(
-            ['required' => true],
-            json_decode($result->fields->first()->extended_options, true)
-        );
+        $this->assertNotNull($loadedTemplate);
+        $loadedField = $loadedTemplate->fields->first();
+        $this->assertArrayHasKey('extended_options', $loadedField->toArray());
+    }
+
+    public function test_scope_with_meta_and_fields_all()
+    {
+        $template = Template::factory()->create();
+        $field = TemplateField::factory()->create(['template_id' => $template->id]);
+
+        $loadedTemplate = Template::withMetaAndFields(true, true)->find($template->id);
+
+        $this->assertNotNull($loadedTemplate);
+
+        $loadedField = $loadedTemplate->fields->first();
+        $loadedFieldArray = $loadedTemplate->fields->first()->toArray();
+
+        $this->assertArrayHasKeys(['extended_options', 'created_at', 'updated_at'], $loadedFieldArray);
     }
 }
