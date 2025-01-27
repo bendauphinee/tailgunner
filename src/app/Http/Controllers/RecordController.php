@@ -3,12 +3,10 @@
 namespace App\Http\Controllers;
 
 use App\Models\Template;
-use App\Models\TemplateRecord;
 use App\Models\TemplateRecordValue;
 use App\Services\TemplateRecordTransformer;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
-use Illuminate\Validation\ValidationException;
 
 class RecordController extends Controller
 {
