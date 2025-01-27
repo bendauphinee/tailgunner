@@ -203,10 +203,10 @@ const handleFieldNameInput = (field) => {
                             <font-awesome-icon :icon="['fas', 'plus']" />
                             Add Record
                         </button>
-                        <button @click="btnClick(`View Records For Template ${template.id}`)">
+                        <Link :href="route('records.{template}.index', { template: template.id })" class="button">
                             <font-awesome-icon :icon="['fas', 'eye']" />
                             View Records
-                        </button>
+                        </Link>
                     </div>
                 </div>
             </div>
