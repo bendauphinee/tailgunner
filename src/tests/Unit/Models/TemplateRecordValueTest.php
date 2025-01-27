@@ -6,12 +6,12 @@ use App\Models\Template;
 use App\Models\TemplateField;
 use App\Models\TemplateRecord;
 use App\Models\TemplateRecordValue;
-use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Foundation\Testing\DatabaseTransactions;
 use Tests\TestCase;
 
 class TemplateRecordValueTest extends TestCase
 {
-    use RefreshDatabase;
+    use DatabaseTransactions;
 
     public function test_record_value_relationships()
     {
