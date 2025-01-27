@@ -15,8 +15,8 @@ class TemplateRecordValue extends Model
         'integer' => 'integer_value',
         'string' => 'string_value',
         'text' => 'text_value',
-        'dropdown' => 'text_value',
-        'checkbox' => 'text_value'
+        'dropdown' => 'string_value',
+        'checkbox' => 'string_value'
     ];
 
     protected $fillable = [

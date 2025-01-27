@@ -43,13 +43,14 @@ class Template extends Model
             'label',
             'name',
             'type',
+            'order',
         ];
 
         // Get the commonly used extended options
         if ($withExtendedFields || $withAllFields) {
             $fieldsInfo = array_merge(
                 $fieldsInfo,
-                ['order', 'extended_options']
+                ['extended_options']
             );
         }
 
@@ -64,16 +65,8 @@ class Template extends Model
         return $query
             ->select(['id', 'title', 'description'])
             ->with([
-                'fields' => function($query) {
-                    $query->select([
-                        'id',
-                        'template_id',
-                        'label',
-                        'name',
-                        'type',
-                        'order',
-                        'extended_options',
-                    ])
+                'fields' => function($query) use ($fieldsInfo) {
+                    $query->select($fieldsInfo)
                     ->orderBy('order');
                 }
             ]);
