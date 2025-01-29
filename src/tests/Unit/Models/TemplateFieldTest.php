@@ -4,12 +4,12 @@ namespace Tests\Unit\Models;
 
 use App\Models\Template;
 use App\Models\TemplateField;
-use Illuminate\Foundation\Testing\DatabaseTransactions;
+use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
 class TemplateFieldTest extends TestCase
 {
-    use DatabaseTransactions;
+    use RefreshDatabase;
 
     private Template $template;
     private bool $templateCreated = false;
