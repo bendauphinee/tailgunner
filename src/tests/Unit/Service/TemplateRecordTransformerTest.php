@@ -6,12 +6,12 @@ use App\Models\Template;
 use App\Models\TemplateField;
 use App\Models\TemplateRecordValue;
 use App\Services\TemplateRecordTransformer;
-use Illuminate\Foundation\Testing\DatabaseTransactions;
+use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
 class TemplateRecordTransformerTest extends TestCase
 {
-    use DatabaseTransactions;
+    use RefreshDatabase;
 
     private Template $template;
     private TemplateField $nameField;

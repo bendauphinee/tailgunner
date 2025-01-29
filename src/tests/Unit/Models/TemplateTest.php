@@ -4,12 +4,12 @@ namespace Tests\Unit\Models;
 
 use App\Models\Template;
 use App\Models\TemplateField;
-use Illuminate\Foundation\Testing\DatabaseTransactions;
+use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
 class TemplateTest extends TestCase
 {
-    use DatabaseTransactions;
+    use RefreshDatabase;
 
     public function test_can_create_template()
     {
@@ -51,7 +51,8 @@ class TemplateTest extends TestCase
         $this->assertArrayHasKeys(['id', 'title', 'description'], $loadedTemplateArray);
 
         $loadedFieldArray = $loadedTemplate->fields->first()->toArray();
-        $this->assertArrayHasKeys(['id',
+        $this->assertArrayHasKeys([
+            'id',
             'template_id',
             'label',
             'name',

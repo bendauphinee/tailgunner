@@ -26,12 +26,15 @@ class RecordController extends Controller
 
         // Grab the records data for the template
         $values = TemplateRecordValue::query()
-            ->select('template_record_id', 'template_field_id', 'string_value', 'text_value', 'integer_value')
-            ->whereIn('template_record_id', function($query) use ($template) {
-                $query->select('id')
-                    ->from('template_records')
-                    ->where('template_id', $template->id);
-            })
+            ->select([
+                'template_record_id',
+                'template_field_id',
+                'string_value',
+                'text_value',
+                'integer_value'
+            ])
+            ->join('template_records', 'template_record_values.template_record_id', '=', 'template_records.id')
+            ->where('template_records.template_id', $template->id)
             ->get();
 
         // Transform the values into proper records

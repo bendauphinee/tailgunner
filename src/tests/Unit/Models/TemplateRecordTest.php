@@ -5,12 +5,12 @@ namespace Tests\Unit\Models;
 use App\Models\Template;
 use App\Models\TemplateRecord;
 use App\Models\TemplateRecordValue;
-use Illuminate\Foundation\Testing\DatabaseTransactions;
+use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
 class TemplateRecordTest extends TestCase
 {
-    use DatabaseTransactions;
+    use RefreshDatabase;
 
     private Template $template;
 
