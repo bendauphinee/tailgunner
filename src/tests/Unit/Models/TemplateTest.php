@@ -51,7 +51,8 @@ class TemplateTest extends TestCase
         $this->assertArrayHasKeys(['id', 'title', 'description'], $loadedTemplateArray);
 
         $loadedFieldArray = $loadedTemplate->fields->first()->toArray();
-        $this->assertArrayHasKeys(['id',
+        $this->assertArrayHasKeys([
+            'id',
             'template_id',
             'label',
             'name',

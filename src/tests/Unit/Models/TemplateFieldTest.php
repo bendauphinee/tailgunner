@@ -12,12 +12,16 @@ class TemplateFieldTest extends TestCase
     use DatabaseTransactions;
 
     private Template $template;
+    private bool $templateCreated = false;
 
     protected function setUp(): void
     {
         parent::setUp();
 
-        $this->template = Template::factory()->create();
+        if (!$this->templateCreated) {
+            $this->template = Template::factory()->create();
+            $this->templateCreated = true;
+        }
     }
 
     public function test_can_create_template_field()
