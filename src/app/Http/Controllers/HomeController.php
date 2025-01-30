@@ -68,6 +68,11 @@ class HomeController extends Controller
                     'url' => 'https://bendauphinee.com/writing/2025/01/22/an-app-from-scratch-part-10-reflections-and-template-editing/',
                     'date' => 'Jan 22, 2025',
                 ],
+                [
+                    'title' => 'Part 11 – Template Data Modelling and Test Optimizations',
+                    'url' => 'https://bendauphinee.com/writing/2025/01/30/an-app-from-scratch-part-11-template-data-modelling-and-test-optimizations/',
+                    'date' => 'Jan 30, 2025',
+                ],
             ],
         ]);
     }
